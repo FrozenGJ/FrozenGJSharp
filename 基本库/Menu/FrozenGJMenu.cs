@@ -18,7 +18,7 @@ namespace LeagueSharp.Common {
 
 		public static Font WaterMarkFont { get; private set; }
 
-		public static async void Initialize() {
+		public static void Initialize() {
 			WaterMarkFont = new Font(Drawing.Direct3DDevice,
 						new FontDescription
 						{
@@ -33,9 +33,6 @@ namespace LeagueSharp.Common {
 
 			Info = Menu.AddSubMenu(new Menu("信息设置", "信息设置"));
 			Info.AddItem(new MenuItem("水印", "载入屏显示FrozenGJ水印").SetValue(true));
-			Info.AddItem(new MenuItem("Mark1X", "水印1距左方距离").SetValue(new Slider(10)));
-			Info.AddItem(new MenuItem("Mark2X", "水印2距左方距离").SetValue(new Slider(60)));
-			Info.AddItem(new MenuItem("MarkY", "水印距上方距离").SetValue(new Slider(50)));
 			Info.AddItem(new MenuItem("logo类型", "选择显示的logo的类型").SetValue(new StringList(new[] { "logo1", "logo2" })));
 			Info.AddItem(new MenuItem("新闻", "显示FrozenGJ新闻").SetValue(true));
 			Info.AddItem(new MenuItem("加群", "点击复制FrozenGJ脚本群号").SetValue(false).DontSave()).ValueChanged += (sender, args) =>
@@ -50,21 +47,14 @@ namespace LeagueSharp.Common {
 			CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
 			Drawing.OnDraw += Drawing_OnDraw;
 
-			if (Info.Item("新闻").GetValue<bool>())
-			{
-				var news = await FrozenGJ.FetchNews();
-				if (!string.IsNullOrEmpty(news))
-				{
-					FrozenGJ.News(news);
-				}
-			}
+			
 		}
 
 		private static void Drawing_OnDraw(EventArgs args) {
 			if (Info.Item("水印").GetValue<bool>() && DrawWaterMark)
 			{
 				MenuDrawHelper.DrawBox(
-				new Vector2(0, Drawing.Height * 48 / 100), 
+				new Vector2(0, Drawing.Height * 48f / 100), 
 				Drawing.Width,
 				Drawing.Height * 5 / 100,
 				Color.Black, 
@@ -72,7 +62,7 @@ namespace LeagueSharp.Common {
 				Color.Goldenrod);
 
 				WaterMarkFont.DrawText(null, "FrozenGJ脚本  致力于做到最好！",
-					Drawing.Width * 35 / 100,
+					Drawing.Width * 40 / 100,
 					Drawing.Height * 49 / 100,
 					new ColorBGRA(Color.Goldenrod.R, Color.Goldenrod.G, Color.Goldenrod.B, Color.Goldenrod.A));
 
@@ -83,8 +73,16 @@ namespace LeagueSharp.Common {
 			}
 		}
 
-		private static void Game_OnGameLoad(EventArgs eventArgs)
-		{
+		private static async void Game_OnGameLoad(EventArgs eventArgs) {
+			if (Info.Item("新闻").GetValue<bool>())
+			{
+				var news = await FrozenGJ.FetchNews();
+				if (!string.IsNullOrEmpty(news))
+				{
+					FrozenGJ.News(news);
+				}
+			}
+
 			DrawWaterMark = false;
 			ShowLogo();
 

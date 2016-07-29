@@ -70,7 +70,7 @@ namespace LeagueSharp.Common {
 			}
 		}
 
-		public static async Task<string> FetchNews(string url = "") {
+		public static async Task<string> FetchNews(string url = "https://raw.githubusercontent.com/FrozenGJ/FrozenGJSharp/master/A%E6%96%B0%E9%97%BB/NEWS.txt") {
 			try
 			{
 				var request = WebRequest.Create(url);
