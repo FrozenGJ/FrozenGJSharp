@@ -46,8 +46,6 @@ namespace LeagueSharp.Common {
 			
 			CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
 			Drawing.OnDraw += Drawing_OnDraw;
-
-			
 		}
 
 		private static void Drawing_OnDraw(EventArgs args) {
@@ -119,21 +117,10 @@ namespace LeagueSharp.Common {
 		}
 
 		private static void Game_OnUpdate(EventArgs args) {
-			LeagueSharp.Hacks.DisableDrawings = DisableDrawings || Game.Time < EndTime;
-
-			if (DisableDrawings)
-			{
-				return;
-			}
-
-			if (Draw.Item("商店屏蔽").GetValue<bool>())
-			{
-				LeagueSharp.Hacks.DisableDrawings = MenuGUI.IsShopOpen || Game.Time < EndTime;
-			}
-			if (Draw.Item("比分屏蔽").GetValue<bool>())
-			{
-				LeagueSharp.Hacks.DisableDrawings = MenuGUI.IsScoreboardOpen || Game.Time < EndTime;
-			}
+			LeagueSharp.Hacks.DisableDrawings = DisableDrawings 
+				|| Game.Time < EndTime
+				|| Draw.Item("商店屏蔽").GetValue<bool>() && MenuGUI.IsShopOpen
+				|| Draw.Item("比分屏蔽").GetValue<bool>() && MenuGUI.IsScoreboardOpen;
 		}
 
 		private static void Game_OnPing(GamePingEventArgs args) {
@@ -150,14 +137,10 @@ namespace LeagueSharp.Common {
 				else if (args.EventId == GameEventId.OnChampionDie)
 				{
 					int kills = Draw.Item("连杀人数").GetValue<Slider>().Value + 1;
-					if (kills >= 8)
+					if (kills >= 8 && Draw.Item("超神屏蔽").GetValue<bool>())
 					{
 						Draw.Item("连杀人数").SetValue(new Slider(8, 0, 8));
-						var tempTime = Game.Time + Draw.Item("屏蔽时长").GetValue<Slider>().Value;
-						if (tempTime > EndTime)
-						{
-							EndTime = tempTime;
-						}
+						EndTime = Math.Max(Game.Time + Draw.Item("屏蔽时长").GetValue<Slider>().Value, EndTime);
 					}
 					else
 					{
@@ -169,12 +152,7 @@ namespace LeagueSharp.Common {
 					|| args.EventId == GameEventId.OnChampionPentaKill
 					|| args.EventId == GameEventId.OnChampionUnrealKill)
 				{
-					//Game.PrintChat("Disable:"+ args.EventId.ToString());
-					var tempTime = Game.Time + Draw.Item("屏蔽时长").GetValue<Slider>().Value;
-					if (tempTime > EndTime)
-					{
-						EndTime = tempTime;
-					}
+					EndTime =  Math.Max(Game.Time + Draw.Item("屏蔽时长").GetValue<Slider>().Value, EndTime);
 				}
 
 			}
