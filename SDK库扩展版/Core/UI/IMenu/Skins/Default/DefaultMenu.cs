@@ -108,6 +108,10 @@ namespace LeagueSharp.SDK.UI.Skins.Default
 			{
 				displayName = "【FrozenGJ】" + MultiLanguage.Translation(displayName);
 			}
+			else
+			{
+				displayName =  MultiLanguage.Translation(displayName);
+			}
 			return displayName;
 		}
 
