@@ -284,8 +284,7 @@
         {
             get
             {
-				//return MenuDrawHelper.Font.MeasureText(MultiLanguage._(this.DisplayName)).Width + 30;
-				return MenuDrawHelper.Font.MeasureText(ChackMenu(this.IsRootMenu,DisplayName)).Width + 30;
+                return MenuDrawHelper.Font.MeasureText(MultiLanguage._(this.DisplayName)).Width + 25;
             }
         }
 
@@ -633,9 +632,8 @@
                 FontDrawFlags.Right | FontDrawFlags.VerticalCenter,
                 this.Color);
 
-            //var textWidth = font.MeasureText(null, MultiLanguage._(this.DisplayName));
-			var textWidth = font.MeasureText(null, ChackMenu(this.IsRootMenu, this.DisplayName));
-			if ((this.Style & FontStyle.Strikeout) != 0)
+            var textWidth = font.MeasureText(null, MultiLanguage._(this.DisplayName));
+            if ((this.Style & FontStyle.Strikeout) != 0)
             {
                 Drawing.DrawLine(
                     this.Position.X + 5,
