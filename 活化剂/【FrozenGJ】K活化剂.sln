@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Activator", "Activator.csproj", "{E5563C65-629B-4845-AA8C-369B73EB5A29}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "【FrozenGJ】K活化剂", "【FrozenGJ】K活化剂.csproj", "{E5563C65-629B-4845-AA8C-369B73EB5A29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

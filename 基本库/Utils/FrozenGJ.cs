@@ -71,27 +71,25 @@ namespace LeagueSharp.Common {
 		}
 
 		public static async Task<string> FetchNews(string url = "https://raw.githubusercontent.com/FrozenGJ/FrozenGJSharp/master/A%E6%96%B0%E9%97%BB/NEWS.txt") {
-			try
-			{
-				var request = WebRequest.Create(url);
-				var response = await request.GetResponseAsync();
-				var responseStream = response.GetResponseStream();
-				if (responseStream != null)
+			var News = await Task.Factory.StartNew(
+				() =>
 				{
-					StreamReader reader = new StreamReader(responseStream, Encoding.Default);
-					var msg = reader.ReadToEnd();
-					reader.Close();
-					reader.Dispose();
-					response.Close();
-					return msg;
-				}
-				return null;
-			}
-			catch
-			{
-				Console.WriteLine("抓取新闻失败");
-				return null;
-			}
+					try
+					{
+						using (var c = new WebClient())
+						{
+							var news = new WebClient().DownloadString(url);
+							return news;
+						}
+					}
+
+					catch (Exception e)
+					{
+						Console.WriteLine("抓取新闻失败");
+						return "";
+					}
+				});
+			return News;
 		}
 	}
 }

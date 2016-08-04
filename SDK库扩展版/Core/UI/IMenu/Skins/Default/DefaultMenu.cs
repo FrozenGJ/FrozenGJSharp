@@ -102,8 +102,7 @@ namespace LeagueSharp.SDK.UI.Skins.Default
 		/// <param name="displayName"></param>
 		/// <returns></returns>
 		public string ChackMenu(bool isRootMenu, string displayName) {
-			displayName = displayName.Replace("娛樂漢化：", "")
-				.Replace("[Chaos|VIP系列]：", "");
+			
 			if (isRootMenu)
 			{
 				displayName = "【FrozenGJ】" + MultiLanguage.Translation(displayName);
@@ -112,6 +111,9 @@ namespace LeagueSharp.SDK.UI.Skins.Default
 			{
 				displayName =  MultiLanguage.Translation(displayName);
 			}
+
+			displayName = displayName.Replace("娛樂漢化：", "")
+				.Replace("[Chaos|VIP系列]：", "");
 			return displayName;
 		}
 
