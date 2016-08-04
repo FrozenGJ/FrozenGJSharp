@@ -11,7 +11,7 @@ namespace OneKeyToWin_AIO_Sebby.Core
         public Obj_AI_Hero Target;
         private static Obj_AI_Hero Player { get { return ObjectManager.Player; } }
         private static Menu Config = Program.Config;
-        private static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        private static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private string MissileName, MissileReturnName;
         private Spell QWER;
         public MissileClient Missile;

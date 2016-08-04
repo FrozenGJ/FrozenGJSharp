@@ -9,7 +9,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
     class Kindred
     {
         private Menu Config = Program.Config;
-        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Spell E, Q, R, W;
         private float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
 
@@ -57,7 +57,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
 
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
-            SebbyLib.Orbwalking.AfterAttack += Orbwalker_AfterAttack;
+            LeagueSharp.Common.Orbwalking.AfterAttack += Orbwalker_AfterAttack;
         }
 
 

@@ -12,7 +12,7 @@ namespace OneKeyToWin_AIO_Sebby
     class Jinx
     {
         private Menu Config = Program.Config;
-        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         public Spell Q, W, E, R;
         public float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
 
@@ -34,7 +34,7 @@ namespace OneKeyToWin_AIO_Sebby
 
             LoadMenuOKTW();
             Game.OnUpdate += Game_OnUpdate;
-            SebbyLib.Orbwalking.BeforeAttack += BeforeAttack;
+            LeagueSharp.Common.Orbwalking.BeforeAttack += BeforeAttack;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Drawing.OnDraw += Drawing_OnDraw;
@@ -77,7 +77,7 @@ namespace OneKeyToWin_AIO_Sebby
 
         }
 
-        private void BeforeAttack(SebbyLib.Orbwalking.BeforeAttackEventArgs args)
+        private void BeforeAttack(LeagueSharp.Common.Orbwalking.BeforeAttackEventArgs args)
         {
             if (!Q.IsReady() || !Config.Item("autoQ", true).GetValue<bool>() || !FishBoneActive)
                 return;
@@ -179,10 +179,10 @@ namespace OneKeyToWin_AIO_Sebby
 
         private void LogicQ()
         {
-            if (Program.Farm && !FishBoneActive && !Player.IsWindingUp && Orbwalker.GetTarget() == null && SebbyLib.Orbwalking.CanAttack() && Config.Item("farmQout", true).GetValue<bool>() && Player.Mana > RMANA + WMANA + EMANA + 10)
+            if (Program.Farm && !FishBoneActive && !Player.IsWindingUp && Orbwalker.GetTarget() == null && LeagueSharp.Common.Orbwalking.CanAttack() && Config.Item("farmQout", true).GetValue<bool>() && Player.Mana > RMANA + WMANA + EMANA + 10)
             {
                 foreach (var minion in Cache.GetMinions(Player.Position, bonusRange() + 30).Where(
-                minion => !SebbyLib.Orbwalking.InAutoAttackRange(minion) && GetRealPowPowRange(minion) < GetRealDistance(minion) && bonusRange() < GetRealDistance(minion)))
+                minion => !LeagueSharp.Common.Orbwalking.InAutoAttackRange(minion) && GetRealPowPowRange(minion) < GetRealDistance(minion) && bonusRange() < GetRealDistance(minion)))
                 {
                     var hpPred = SebbyLib.HealthPrediction.GetHealthPrediction(minion, 400, 70);
                     if (hpPred < Player.GetAutoAttackDamage(minion) * 1.1 && hpPred > 5)
@@ -197,12 +197,12 @@ namespace OneKeyToWin_AIO_Sebby
             var t = TargetSelector.GetTarget(bonusRange() + 60, TargetSelector.DamageType.Physical);
             if (t.IsValidTarget())
             {
-                if (!FishBoneActive && (!SebbyLib.Orbwalking.InAutoAttackRange(t) || t.CountEnemiesInRange(250) > 2) && Orbwalker.GetTarget() == null)
+                if (!FishBoneActive && (!LeagueSharp.Common.Orbwalking.InAutoAttackRange(t) || t.CountEnemiesInRange(250) > 2) && Orbwalker.GetTarget() == null)
                 {
                     var distance = GetRealDistance(t);
                     if (Program.Combo && (Player.Mana > RMANA + WMANA + 10 || Player.GetAutoAttackDamage(t) * 3 > t.Health))
                         Q.Cast();
-                    else if (Program.Farm && !Player.IsWindingUp && SebbyLib.Orbwalking.CanAttack() && Config.Item("Qharras", true).GetValue<bool>() && !ObjectManager.Player.UnderTurret(true) && Player.Mana > RMANA + WMANA + EMANA + 20 && distance < bonusRange() + t.BoundingRadius + Player.BoundingRadius)
+                    else if (Program.Farm && !Player.IsWindingUp && LeagueSharp.Common.Orbwalking.CanAttack() && Config.Item("Qharras", true).GetValue<bool>() && !ObjectManager.Player.UnderTurret(true) && Player.Mana > RMANA + WMANA + EMANA + 20 && distance < bonusRange() + t.BoundingRadius + Player.BoundingRadius)
                         Q.Cast();
                 }
             }
@@ -212,7 +212,7 @@ namespace OneKeyToWin_AIO_Sebby
                 Q.Cast();
             else if (FishBoneActive && Program.Combo && Player.CountEnemiesInRange(2000) == 0)
                 Q.Cast();
-            else if (FishBoneActive && (Program.Farm || Orbwalker.ActiveMode == SebbyLib.Orbwalking.OrbwalkingMode.LastHit))
+            else if (FishBoneActive && (Program.Farm || Orbwalker.ActiveMode == LeagueSharp.Common.Orbwalking.OrbwalkingMode.LastHit))
             {
                 Q.Cast();
             }

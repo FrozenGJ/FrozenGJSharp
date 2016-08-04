@@ -10,7 +10,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
     class Xerath
     {
         private Menu Config = Program.Config;
-        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Spell Q, W, E, R;
         private float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
@@ -76,8 +76,8 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Drawing.OnDraw += Drawing_OnDraw;
             Drawing.OnEndScene +=Drawing_OnEndScene;
-            SebbyLib.Orbwalking.BeforeAttack +=Orbwalking_BeforeAttack;
-            SebbyLib.Orbwalking.AfterAttack +=Orbwalking_AfterAttack;
+            LeagueSharp.Common.Orbwalking.BeforeAttack +=Orbwalking_BeforeAttack;
+            LeagueSharp.Common.Orbwalking.AfterAttack +=Orbwalking_AfterAttack;
             Spellbook.OnCastSpell += Spellbook_OnCastSpell;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
             Obj_AI_Base.OnIssueOrder += Obj_AI_Base_OnIssueOrder;
@@ -129,7 +129,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             }
         }
 
-        private void Orbwalking_BeforeAttack(SebbyLib.Orbwalking.BeforeAttackEventArgs args)
+        private void Orbwalking_BeforeAttack(LeagueSharp.Common.Orbwalking.BeforeAttackEventArgs args)
         {
             if (args.Target.IsValid<Obj_AI_Minion>() && !Player.HasBuff("xerathascended2onhit") && Program.Combo)
             {
@@ -166,8 +166,8 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                 OktwCommon.blockAttack = true;
                 OktwCommon.blockAttack = true;
                 OktwCommon.blockMove = true;
-                SebbyLib.Orbwalking.Attack = false;
-                SebbyLib.Orbwalking.Move = false;
+                LeagueSharp.Common.Orbwalking.Attack = false;
+                LeagueSharp.Common.Orbwalking.Move = false;
                 return;
             }
             else
@@ -176,8 +176,8 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                 OktwCommon.blockAttack = false;
                 OktwCommon.blockAttack = false;
                 OktwCommon.blockMove = false;
-                SebbyLib.Orbwalking.Attack = true;
-                SebbyLib.Orbwalking.Move = true;
+                LeagueSharp.Common.Orbwalking.Attack = true;
+                LeagueSharp.Common.Orbwalking.Move = true;
             }
 
             if (Q.IsCharging && (int)(Game.Time * 10) % 2 == 0)

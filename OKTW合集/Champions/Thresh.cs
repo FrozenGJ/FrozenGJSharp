@@ -10,7 +10,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
     class Thresh
     {
         private Menu Config = Program.Config;
-        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Spell E, Epush, Q, R, W;
         private static Obj_AI_Base Marked;
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
@@ -154,13 +154,13 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             if (Program.Combo && Config.Item("AACombo", true).GetValue<bool>())
             {
                 if (!E.IsReady())
-                    SebbyLib.Orbwalking.Attack = true;
+                    LeagueSharp.Common.Orbwalking.Attack = true;
 
                 else
-                    SebbyLib.Orbwalking.Attack = false;
+                    LeagueSharp.Common.Orbwalking.Attack = false;
             }
             else
-                SebbyLib.Orbwalking.Attack = true;
+                LeagueSharp.Common.Orbwalking.Attack = true;
 
             if (Marked.IsValidTarget())
             {

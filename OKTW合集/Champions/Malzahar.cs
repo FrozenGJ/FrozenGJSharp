@@ -10,7 +10,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
     class Malzahar
     {
         private Menu Config = Program.Config;
-        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Spell Q, Qr, W, E, R;
         private float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         private float Rtime = 0;
@@ -143,8 +143,8 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                 OktwCommon.blockMove = true;
                 OktwCommon.blockAttack = true;
                 OktwCommon.blockSpells = true;
-                SebbyLib.Orbwalking.Attack = false;
-                SebbyLib.Orbwalking.Move = false;
+                LeagueSharp.Common.Orbwalking.Attack = false;
+                LeagueSharp.Common.Orbwalking.Move = false;
                 return;
             }
             else
@@ -152,8 +152,8 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                 OktwCommon.blockSpells = false;
                 OktwCommon.blockMove = false;
                 OktwCommon.blockAttack = false;
-                SebbyLib.Orbwalking.Attack = true;
-                SebbyLib.Orbwalking.Move = true;
+                LeagueSharp.Common.Orbwalking.Attack = true;
+                LeagueSharp.Common.Orbwalking.Move = true;
             }
 
             if (R.IsReady() && Config.Item("useR", true).GetValue<KeyBind>().Active)

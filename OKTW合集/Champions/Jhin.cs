@@ -11,7 +11,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
     class Jhin
     {
         private Menu Config = Program.Config;
-        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Spell E, Q, R, W;
         private float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         private bool Ractive = false;
@@ -164,16 +164,16 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             {
                 OktwCommon.blockMove = true;
                 OktwCommon.blockAttack = true;
-                SebbyLib.Orbwalking.Attack = false;
-                SebbyLib.Orbwalking.Move = false;
+                LeagueSharp.Common.Orbwalking.Attack = false;
+                LeagueSharp.Common.Orbwalking.Move = false;
                 return;
             }
             else
             {
                 OktwCommon.blockMove = false;
                 OktwCommon.blockAttack = false;
-                SebbyLib.Orbwalking.Attack = true;
-                SebbyLib.Orbwalking.Move = true;
+                LeagueSharp.Common.Orbwalking.Attack = true;
+                LeagueSharp.Common.Orbwalking.Move = true;
             }
 
 
@@ -360,7 +360,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                 }
 
             }
-            else if(!SebbyLib.Orbwalking.CanAttack() && !Player.IsWindingUp)
+            else if(!LeagueSharp.Common.Orbwalking.CanAttack() && !Player.IsWindingUp)
             {
                 var t = torb as Obj_AI_Hero;
                 if (t.Health < GetQdmg(t) + GetWdmg(t))

@@ -140,7 +140,11 @@
 		    if (isRootMenu)
 		    {
 			    DisplayName = "【FrozenGJ】" + MultiLanguage._(DisplayName);
-		    }
+			}
+			else
+		    {
+				DisplayName = MultiLanguage._(DisplayName);
+			}
 		    return DisplayName;
 	    }
 
@@ -621,7 +625,7 @@
 
             font.DrawText(
                 null,
-                MultiLanguage._(this.DisplayName),
+                ChackMenu(this.IsRootMenu,this.DisplayName),
                 new Rectangle((int)this.Position.X + 5, (int)this.Position.Y, this.Width, this.Height),
                 FontDrawFlags.VerticalCenter,
                 this.Color);
@@ -632,7 +636,7 @@
                 FontDrawFlags.Right | FontDrawFlags.VerticalCenter,
                 this.Color);
 
-            var textWidth = font.MeasureText(null, MultiLanguage._(this.DisplayName));
+            var textWidth = font.MeasureText(null, ChackMenu(this.IsRootMenu, this.DisplayName));
             if ((this.Style & FontStyle.Strikeout) != 0)
             {
                 Drawing.DrawLine(

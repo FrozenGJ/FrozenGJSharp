@@ -11,7 +11,7 @@ namespace OneKeyToWin_AIO_Sebby.Core
     class OKTWdraws
     {
         private Menu Config = Program.Config;
-        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Obj_AI_Hero Player { get { return ObjectManager.Player; } }
         public Spell Q, W, E, R, DrawSpell;
         public static Font Tahoma13, Tahoma13B, TextBold;

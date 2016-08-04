@@ -6,13 +6,19 @@ using LeagueSharp.Common;
 using SharpDX;
 using SPrediction;
 using SebbyLib;
+using Damage = LeagueSharp.Common.Damage;
+using Extensions = LeagueSharp.Common.Extensions;
+using Geometry = LeagueSharp.Common.Geometry;
+using HitChance = LeagueSharp.Common.HitChance;
+using SkillshotType = LeagueSharp.Common.SkillshotType;
+using Spell = LeagueSharp.Common.Spell;
 
 namespace OneKeyToWin_AIO_Sebby
 {
     internal class Program
     {
         public static Menu Config;
-        public static SebbyLib.Orbwalking.Orbwalker Orbwalker;
+        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker;
         public static Spell Q, W, E, R, DrawSpell;
         public static float JungleTime, DrawSpellTime=0;
         public static Obj_AI_Hero jungler = ObjectManager.Player;
@@ -27,7 +33,7 @@ namespace OneKeyToWin_AIO_Sebby
 
 	    static void Main(string[] args)
 	    {
-		    LeagueSharp.SDK.Bootstrap.Init();
+		    //LeagueSharp.SDK.Bootstrap.Init();
 		    CustomEvents.Game.OnGameLoad += GameOnOnGameLoad;
 	    }
 
@@ -66,7 +72,7 @@ namespace OneKeyToWin_AIO_Sebby
                     new Core.OktwTs().LoadOKTW();
                 }
                 Config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
-                Orbwalker = new SebbyLib.Orbwalking.Orbwalker(Config.SubMenu("Orbwalking"));
+                Orbwalker = new LeagueSharp.Common.Orbwalking.Orbwalker(Config.SubMenu("Orbwalking"));
             }
 
             if (AIOmode != 1)
@@ -276,8 +282,9 @@ namespace OneKeyToWin_AIO_Sebby
             //new AfkMode().LoadOKTW();
             Config.AddToMainMenu();
             Game.OnUpdate += OnUpdate;
-            SebbyLib.Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
-            Drawing.OnDraw += OnDraw;
+			LeagueSharp.Common.Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
+
+			Drawing.OnDraw += OnDraw;
             Game.OnWndProc += Game_OnWndProc;
 
 			Extensions.FgInfo("OKTW合集");
@@ -289,7 +296,9 @@ namespace OneKeyToWin_AIO_Sebby
 			//}
 		}
 
-        private static void Game_OnWndProc(WndEventArgs args)
+	
+
+		private static void Game_OnWndProc(WndEventArgs args)
         {
             if (args.WParam == 16)
             {
@@ -312,7 +321,7 @@ namespace OneKeyToWin_AIO_Sebby
                 return;
             }
 
-            foreach (var enemy in HeroManager.Enemies.Where(enemy => enemy.IsMelee && enemy.IsValidTarget(dodgeRange) && enemy.IsFacing(Player) && Config.Item("posAssistant" + enemy.ChampionName).GetValue<bool>() ))
+            foreach (var enemy in HeroManager.Enemies.Where(enemy => enemy.IsMelee && Utility.IsValidTarget(enemy, dodgeRange) && Utility.IsFacing(enemy, Player) && Config.Item("posAssistant" + enemy.ChampionName).GetValue<bool>() ))
             {
                 var points = OktwCommon.CirclePoints(20, 250, Player.Position);   
 
@@ -324,25 +333,25 @@ namespace OneKeyToWin_AIO_Sebby
 
                 foreach (var point in points)
                 {
-                    if (point.IsWall() || point.UnderTurret(true))
+                    if (Utility.IsWall(point) || point.UnderTurret(true))
                     {
                         Orbwalker.SetOrbwalkingPoint(new Vector3());
                         return;
                     }
 
-                    if (enemy.Distance(point) > dodgeRange && (bestPoint == Vector3.Zero || Game.CursorPos.Distance(point) < Game.CursorPos.Distance(bestPoint)))
+                    if (Geometry.Distance(enemy, point) > dodgeRange && (bestPoint == Vector3.Zero || Geometry.Distance(Game.CursorPos, point) < Geometry.Distance(Game.CursorPos, bestPoint)))
                     {
                         bestPoint = point;
                     }
                 }
 
-                if ( enemy.Distance(bestPoint) > dodgeRange )
+                if ( Geometry.Distance(enemy, bestPoint) > dodgeRange )
                 {
                     Orbwalker.SetOrbwalkingPoint(bestPoint);
                 }
                 else
                 {
-                    var fastPoint = enemy.ServerPosition.Extend(Player.ServerPosition, dodgeRange);
+                    var fastPoint = Geometry.Extend(enemy.ServerPosition, Player.ServerPosition, dodgeRange);
                     if (fastPoint.CountEnemiesInRange(dodgeRange) <= Player.CountEnemiesInRange(dodgeRange))
                     {
                         Orbwalker.SetOrbwalkingPoint(fastPoint);
@@ -358,7 +367,7 @@ namespace OneKeyToWin_AIO_Sebby
                 OktwCommon.blockAttack = false;
         }
 
-        private static void Orbwalking_BeforeAttack(SebbyLib.Orbwalking.BeforeAttackEventArgs args)
+        private static void Orbwalking_BeforeAttack(LeagueSharp.Common.Orbwalking.BeforeAttackEventArgs args)
         {
             if (AIOmode == 2)
                 return;
@@ -366,7 +375,7 @@ namespace OneKeyToWin_AIO_Sebby
             if (Combo && Config.Item("comboDisableMode", true).GetValue<bool>())
             {
                 var t = (Obj_AI_Hero)args.Target;
-                if(4 * Player.GetAutoAttackDamage(t) < t.Health - OktwCommon.GetIncomingDamage(t) && !t.HasBuff("luxilluminatingfraulein") && !Player.HasBuff("sheen") && !Player.HasBuff("Mastery6261"))
+                if(4 * Damage.GetAutoAttackDamage(Player, t) < t.Health - OktwCommon.GetIncomingDamage(t) && !t.HasBuff("luxilluminatingfraulein") && !Player.HasBuff("sheen") && !Player.HasBuff("Mastery6261"))
                     args.Process = false;
             }
 
@@ -375,7 +384,7 @@ namespace OneKeyToWin_AIO_Sebby
                 args.Process = false;
             }
 
-            if (Orbwalker.ActiveMode == SebbyLib.Orbwalking.OrbwalkingMode.Mixed && Config.Item("supportMode",true).GetValue<bool>())
+            if (Orbwalker.ActiveMode == LeagueSharp.Common.Orbwalking.OrbwalkingMode.Mixed && Config.Item("supportMode",true).GetValue<bool>())
             {
                 if (args.Target.Type == GameObjectType.obj_AI_Minion) args.Process = false;
             }
@@ -404,7 +413,7 @@ namespace OneKeyToWin_AIO_Sebby
             {
                 if (jungler.IsDead)
                 {
-                    timer = (int)(enemySpawn.Position.Distance(Player.Position) / 370);
+                    timer = (int)(Geometry.Distance(enemySpawn.Position, Player.Position) / 370);
                 }
                 else if (jungler.IsVisible)
                 {
@@ -415,7 +424,7 @@ namespace OneKeyToWin_AIO_Sebby
                         return;
                     foreach (var point in JunglerPath)
                     {
-                        var PSDistance = PointStart.Distance(point);
+                        var PSDistance = Geometry.Distance(PointStart, point);
                         if (PSDistance > 0)
                         {
                             Way += PSDistance;
@@ -435,9 +444,9 @@ namespace OneKeyToWin_AIO_Sebby
                 return false;
         }
 
-        public static bool Farm { get { return (Orbwalker.ActiveMode == SebbyLib.Orbwalking.OrbwalkingMode.LaneClear && Config.Item("harassLaneclear").GetValue<bool>()) || Orbwalker.ActiveMode == SebbyLib.Orbwalking.OrbwalkingMode.Mixed || Orbwalker.ActiveMode == SebbyLib.Orbwalking.OrbwalkingMode.Freeze; } }
+        public static bool Farm { get { return (Orbwalker.ActiveMode == LeagueSharp.Common.Orbwalking.OrbwalkingMode.LaneClear && Config.Item("harassLaneclear").GetValue<bool>()) || Orbwalker.ActiveMode == LeagueSharp.Common.Orbwalking.OrbwalkingMode.Mixed || Orbwalker.ActiveMode == LeagueSharp.Common.Orbwalking.OrbwalkingMode.Freeze; } }
 
-        public static bool None { get { return (Orbwalker.ActiveMode == SebbyLib.Orbwalking.OrbwalkingMode.None); } }
+        public static bool None { get { return (Orbwalker.ActiveMode == LeagueSharp.Common.Orbwalking.OrbwalkingMode.None); } }
 
         public static bool Combo { get {
                 if (AIOmode == 2)
@@ -448,71 +457,72 @@ namespace OneKeyToWin_AIO_Sebby
                         return false;
                 }
                 else
-                    return (Orbwalker.ActiveMode == SebbyLib.Orbwalking.OrbwalkingMode.Combo);
+                    return (Orbwalker.ActiveMode == LeagueSharp.Common.Orbwalking.OrbwalkingMode.Combo);
 
             } }
 
-        public static bool LaneClear { get { return (Orbwalker.ActiveMode == SebbyLib.Orbwalking.OrbwalkingMode.LaneClear); } }
+        public static bool LaneClear { get { return (Orbwalker.ActiveMode == LeagueSharp.Common.Orbwalking.OrbwalkingMode.LaneClear); } }
 
         private static bool IsJungler(Obj_AI_Hero hero) { return hero.Spellbook.Spells.Any(spell => spell.Name.ToLower().Contains("smite")); }
 
-        public static void CastSpell(Spell QWER, Obj_AI_Base target)
+		public static void CastSpell(Spell QWER, Obj_AI_Base target)
         {
             if (Config.Item("PredictionMODE", true).GetValue<StringList>().SelectedIndex == 3)
             {
-                SebbyLib.Movement.SkillshotType CoreType2 = SebbyLib.Movement.SkillshotType.SkillshotLine;
-                bool aoe2 = false;
 
-                if (QWER.Type == SkillshotType.SkillshotCircle)
-                {
-                    //CoreType2 = SebbyLib.Movement.SkillshotType.SkillshotCircle;
-                    //aoe2 = true;
-                }
+				SebbyLib.Movement.SkillshotType CoreType2 = SebbyLib.Movement.SkillshotType.SkillshotLine;
+				bool aoe2 = false;
 
-                if (QWER.Width > 80 && !QWER.Collision)
-                    aoe2 = true;
+				if (QWER.Type == SkillshotType.SkillshotCircle)
+				{
+					//CoreType2 = SebbyLib.Movement.SkillshotType.SkillshotCircle;
+					//aoe2 = true;
+				}
 
-                var predInput2 = new SebbyLib.Movement.PredictionInput
-                {
-                    Aoe = aoe2,
-                    Collision = QWER.Collision,
-                    Speed = QWER.Speed,
-                    Delay = QWER.Delay,
-                    Range = QWER.Range,
-                    From = Player.ServerPosition,
-                    Radius = QWER.Width,
-                    Unit = target,
-                    Type = CoreType2
-                };
-                var poutput2 = SebbyLib.Movement.Prediction.GetPrediction(predInput2);
+				if (QWER.Width > 80 && !QWER.Collision)
+					aoe2 = true;
 
-                //var poutput2 = QWER.GetPrediction(target);
+				var predInput2 = new SebbyLib.Movement.PredictionInput
+				{
+					Aoe = aoe2,
+					Collision = QWER.Collision,
+					Speed = QWER.Speed,
+					Delay = QWER.Delay,
+					Range = QWER.Range,
+					From = Player.ServerPosition,
+					Radius = QWER.Width,
+					Unit = target,
+					Type = CoreType2
+				};
+				var poutput2 = SebbyLib.Movement.Prediction.GetPrediction(predInput2);
 
-                if (QWER.Speed != float.MaxValue && OktwCommon.CollisionYasuo(Player.ServerPosition, poutput2.CastPosition))
-                    return;
+				//var poutput2 = QWER.GetPrediction(target);
 
-                if (Config.Item("HitChance", true).GetValue<StringList>().SelectedIndex == 0)
-                {
-                    if (poutput2.Hitchance >= SebbyLib.Movement.HitChance.VeryHigh)
-                        QWER.Cast(poutput2.CastPosition);
-                    else if (predInput2.Aoe && poutput2.AoeTargetsHitCount > 1 && poutput2.Hitchance >= SebbyLib.Movement.HitChance.High)
-                    {
-                        QWER.Cast(poutput2.CastPosition);
-                    }
+				if (QWER.Speed != float.MaxValue && OktwCommon.CollisionYasuo(Player.ServerPosition, poutput2.CastPosition))
+					return;
 
-                }
-                else if (Config.Item("HitChance", true).GetValue<StringList>().SelectedIndex == 1)
-                {
-                    if (poutput2.Hitchance >= SebbyLib.Movement.HitChance.High)
-                        QWER.Cast(poutput2.CastPosition);
+				if (Config.Item("HitChance", true).GetValue<StringList>().SelectedIndex == 0)
+				{
+					if (poutput2.Hitchance >= SebbyLib.Movement.HitChance.VeryHigh)
+						QWER.Cast(poutput2.CastPosition);
+					else if (predInput2.Aoe && poutput2.AoeTargetsHitCount > 1 && poutput2.Hitchance >= SebbyLib.Movement.HitChance.High)
+					{
+						QWER.Cast(poutput2.CastPosition);
+					}
 
-                }
-                else if (Config.Item("HitChance", true).GetValue<StringList>().SelectedIndex == 2)
-                {
-                    if (poutput2.Hitchance >= SebbyLib.Movement.HitChance.Medium)
-                        QWER.Cast(poutput2.CastPosition);
-                }
-            }
+				}
+				else if (Config.Item("HitChance", true).GetValue<StringList>().SelectedIndex == 1)
+				{
+					if (poutput2.Hitchance >= SebbyLib.Movement.HitChance.High)
+						QWER.Cast(poutput2.CastPosition);
+
+				}
+				else if (Config.Item("HitChance", true).GetValue<StringList>().SelectedIndex == 2)
+				{
+					if (poutput2.Hitchance >= SebbyLib.Movement.HitChance.Medium)
+						QWER.Cast(poutput2.CastPosition);
+				}
+			}
             else if (Config.Item("PredictionMODE", true).GetValue<StringList>().SelectedIndex == 1)
             {
                 SebbyLib.Prediction.SkillshotType CoreType2 = SebbyLib.Prediction.SkillshotType.SkillshotLine;
@@ -661,7 +671,7 @@ namespace OneKeyToWin_AIO_Sebby
                 if (DrawSpell.Type == SkillshotType.SkillshotCircle)
                     Render.Circle.DrawCircle(DrawSpellPos.CastPosition, DrawSpell.Width, System.Drawing.Color.DimGray, 1);
 
-                drawText("Aiming " + DrawSpellPos.Hitchance, Player.Position.Extend(DrawSpellPos.CastPosition, 400), System.Drawing.Color.Gray);
+                drawText("Aiming " + DrawSpellPos.Hitchance, Geometry.Extend(Player.Position, DrawSpellPos.CastPosition, 400), System.Drawing.Color.Gray);
             }
             
             if (AIOmode != 1 && Config.Item("timer").GetValue<bool>() && jungler != null)
