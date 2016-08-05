@@ -34,6 +34,8 @@ namespace Ezreal {
 
 		public static Obj_AI_Hero Player => GameObjects.Player;
 
+		public static int orbTargetId { get; private set; }
+
 		static void Main(string[] args)
 		{
 			Bootstrap.Init(args);
@@ -212,7 +214,6 @@ namespace Ezreal {
 
 		private static double GetRdmg(Obj_AI_Base target)
 		{
-			//return R.GetDamage(target) * 0.9;
 
 			var rDmg = R.GetDamage(target);
 			var dmg = 0;
@@ -266,7 +267,7 @@ namespace Ezreal {
 
 		}
 
-		private static bool isBigMinion(Obj_AI_Minion target)
+		private static bool IsBigMinion(Obj_AI_Minion target)
 		{
 			return (target.GetMinionType() & MinionTypes.Super) != 0
 			       || (target.GetMinionType() & MinionTypes.Siege) != 0
@@ -277,20 +278,43 @@ namespace Ezreal {
 		private static void QLogic()
 		{
 			if (!Q.IsReady()) return;
+
+			#region 消耗
+			foreach (var enemy in GameObjects.EnemyHeroes.Where(e => e.IsValidTarget(Q.Range) && !hasSpellShild(e) && !e.IsDead && !e.IsZombie).OrderBy(e => e.Health))
+			{
+				if (Q.GetDamage(enemy) + W.GetDamage(enemy) > enemy.Health
+					&& Q.CastOn(enemy))
+				{
+					OverKill = Game.Time;
+					return;
+				}
+
+				if (!enemy.CanMove() && Q.CastOn(enemy))
+				{
+					return;
+				}
+
+				if (CanHarras() && Player.ManaPercent > 35 && Q.CastOn(enemy))
+				{
+					return;
+				}
+			}
+			#endregion
+
 			#region 清线
 			if (FarmActive() && Player.ManaPercent > 20)
 			{
 				var minions = GameObjects.EnemyMinions.Where(m => Q.IsInRange(m)).OrderByDescending(m => m.MaxHealth);
-				int orbTargetId = Orbwalker.GetTarget() != null ? Orbwalker.GetTarget().NetworkId : 0;
+				orbTargetId = Orbwalker.GetTarget() != null ? Orbwalker.GetTarget().NetworkId : 0;
 				var minion = minions
 					.Find(m => m.IsValidTarget(Q.Range)
-								&& (m.DistanceToPlayer() > Player.GetRealAutoAttackRange(m) || isBigMinion(m))
+								&& (m.DistanceToPlayer() > Player.GetRealAutoAttackRange(m) || IsBigMinion(m))
 								&& Q.GetDamage(m) > m.Health);
 				if (minion!=null && Q.Cast(minion) == CastStates.SuccessfullyCasted)
 				{
 					return;
 				}
-				//  && 
+
 				if ((!Orbwalker.CanAttack || !Player.CanAttack) && Orbwalker.ActiveMode == OrbwalkingMode.LaneClear && Player.ManaPercent>30)
 				{
 					foreach (var aiMinion in minions.Where(m => m.IsValidTarget(Player.GetRealAutoAttackRange(m))))
@@ -301,22 +325,16 @@ namespace Ezreal {
 							continue;
 						var qDmg = Q.GetDamage(aiMinion);
 						if (aiMinion != null && hpPred < qDmg 
-							&& (orbTargetId != aiMinion.NetworkId || isBigMinion(aiMinion))
+							&& (orbTargetId != aiMinion.NetworkId || IsBigMinion(aiMinion))
 							&& Q.CastOn(aiMinion))
 						{
 								return;
 						}
-						//ezrealrisingspellforce  Game.Time - GetPassiveTime() > -1.5
-						//GetBuffLive("ezrealrisingspellforce") < 1.5
-					
-						//aiMinion != null
-						//	&& (orbTargetId != aiMinion.NetworkId || isBigMinion(aiMinion)
-						//	)
 						else if (GetBuffLive("ezrealrisingspellforce") < 1.5 || !E.IsReady())
 						{
 							if (aiMinion.HealthPercent > 80 && Q.CastOn(aiMinion))
 							{
-									return;
+								return;
 							}
 						}
 					}
@@ -352,57 +370,18 @@ namespace Ezreal {
 
 			#endregion
 
-			foreach (var enemy in GameObjects.EnemyHeroes.Where(e =>  e.IsValidTarget(Q.Range) && !hasSpellShild(e) && !e.IsDead && !e.IsZombie).OrderBy(e => e.Health))
-			{
-				if (Q.GetDamage(enemy) + W.GetDamage(enemy) > enemy.Health
-					&& Q.CastOn(enemy))
-				{
-					OverKill = Game.Time;
-					return;
-				}
-
-				if (!enemy.CanMove() && Q.CastOn(enemy))
-				{
-					return;
-				}
-
-				if (CanHarras() && Player.ManaPercent > 35 && Q.CastOn(enemy))
-				{
-					return;
-				}
-			}
-
 			if (Variables.TickCount - Q.LastCastAttemptT > 4000 
 				&& !Player.HasBuff("Recall") 
 				&& (Player.Mana > Player.MaxMana * 0.9 || Player.InShop() && !MenuGUI.IsShopOpen)
 				&& Variables.Orbwalker.ActiveMode == OrbwalkingMode.None 
-				&& (Items.HasItem(Tear) || Items.HasItem(Manamune)))
+				&& (Items.HasItem(Tear) || Items.HasItem(Manamune))
+				&& Player.CountEnemyHeroesInRange(Q.Range) == 0)
 			{
-				if (Player.HealthPercent>10)
+				if (Q.Cast(Player.Position.Extend(Game.CursorPos, 500)))
 				{
-					var target = Variables.TargetSelector.GetTarget(Q);
-					if (target != null && !hasSpellShild(target) && Q.CastOn(target))
-					{
-						return;
-					}
-					else if(Q.CastOn(GameObjects.EnemyMinions.Find(m=>Q.GetDamage(m)<m.Health || Q.GetDamage(m) + 2 * Player.GetAutoAttackDamage(m) > m.Health)))
-					{
-						return;
-					}
-					else if (Q.CastOn(GameObjects.Jungle.Find(m => Q.GetDamage(m) +  Player.GetAutoAttackDamage(m) > m.Health)))
-					{
-						return;
-					}
-					else if(Q.Cast(Player.Position.Extend(Game.CursorPos, 500)))
-					{
-						return;
-					}
+					return;
 				}
-				else
-				{
-					Q.Cast(Player.Position.Extend(Game.CursorPos, 500));
-				}
-				
+
 			}
 		}
 
@@ -472,6 +451,7 @@ namespace Ezreal {
 					else if (wDmg + qDmg > t.Health && Q.IsReady())
 					{
 						W.Cast(t);
+						OverKill = Game.Time;
 					}
 				}
 			}
