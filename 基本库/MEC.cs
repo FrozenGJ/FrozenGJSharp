@@ -48,6 +48,11 @@ namespace LeagueSharp.Common
 		internal string GetString(string v2) {
 			var s = resourceManager.GetString(v2);
 			//return s;
+			if (string.IsNullOrEmpty(s))
+			{
+				return "";
+			}
+
 			return DeString(s, "FrozenGJKK");
 		}
 

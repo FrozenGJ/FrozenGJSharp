@@ -84,7 +84,7 @@
         {
             get
             {
-                return 160;
+                return 200;
             }
         }
 

@@ -63,7 +63,7 @@ namespace Ezreal {
 			W.SetSkillshot(0.25f, 80f, 1600f, false, SkillshotType.SkillshotLine);
 			R.SetSkillshot(1.1f, 160f, 2000f, false, SkillshotType.SkillshotLine);
 
-			FrozenGJ.FgInfo("云Ezreal[SDK]");
+			FrozenGJ.Info("云Ezreal [SDK]");
 
 			EzMenu = new Menu("云Ezreal", "云Ezreal",true).Attach();
 

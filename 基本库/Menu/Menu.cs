@@ -135,8 +135,7 @@
 
 	    public string ChackMenu(bool isRootMenu, string DisplayName)
 	    {
-			DisplayName = DisplayName.Replace("娛樂漢化：", "")
-			    .Replace("[Chaos|VIP系列]：", "");
+			
 		    if (isRootMenu)
 		    {
 			    DisplayName = "【FrozenGJ】" + MultiLanguage._(DisplayName);
@@ -145,7 +144,9 @@
 		    {
 				DisplayName = MultiLanguage._(DisplayName);
 			}
-		    return DisplayName;
+			DisplayName = DisplayName.Replace("娛樂漢化：", "")
+				.Replace("[Chaos|VIP系列]：", "");
+			return DisplayName;
 	    }
 
         /// <summary>
@@ -165,7 +166,7 @@
 			
 			this.DisplayName = MenuGlobals.Function001(displayName);
 			//修改的内容
-			this.DisplayName = ChackMenu(isRootMenu,DisplayName);
+			this.DisplayName = ChackMenu(isRootMenu, displayName);
 			this.Name = name;
             this.IsRootMenu = isRootMenu;
             this.Style = FontStyle.Regular;
@@ -607,6 +608,7 @@
             var items = this.Items.ToArray();
 
             Drawing.Direct3DDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
+	       
             MenuDrawHelper.DrawBox(
                 this.Position,
                 this.Width,
@@ -625,7 +627,7 @@
 
             font.DrawText(
                 null,
-                ChackMenu(this.IsRootMenu,this.DisplayName),
+				this.DisplayName,
                 new Rectangle((int)this.Position.X + 5, (int)this.Position.Y, this.Width, this.Height),
                 FontDrawFlags.VerticalCenter,
                 this.Color);
@@ -636,7 +638,7 @@
                 FontDrawFlags.Right | FontDrawFlags.VerticalCenter,
                 this.Color);
 
-            var textWidth = font.MeasureText(null, ChackMenu(this.IsRootMenu, this.DisplayName));
+            var textWidth = font.MeasureText(null, this.DisplayName);
             if ((this.Style & FontStyle.Strikeout) != 0)
             {
                 Drawing.DrawLine(

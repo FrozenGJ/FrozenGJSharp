@@ -21,7 +21,7 @@ namespace LeagueSharp.SDK.Utils {
 		/// <param name="assemblyName"></param>
 		/// <param name="info"></param>
 		/// <param name="delay"></param>
-		public static void FgInfo(string assemblyName, string info = "已加载。。。　", int delay = 0) {
+		public static void Info(string assemblyName, string info = "已加载。。。　", int delay = 0) {
 			var start = "FrozenGJ".ToHtml(Color.RoyalBlue, FontStlye.Bold);
 			var end = info.Equals("已加载。。。　")
 				? (assemblyName + "已加载。。。　").ToHtml(Color.Goldenrod, FontStlye.Cite)

@@ -47,7 +47,19 @@ namespace LeagueSharp.Common
         /// </summary>
         static MultiLanguage()
         {
-            LoadLanguage(Config.SelectedLanguage);
+	        switch (FrozenGJMenu.Language.Item("语言").GetValue<StringList>().SelectedIndex)
+	        {
+				case 0:
+					LoadLanguage(Config.SelectedLanguage);
+					break;
+				case 1:
+					LoadLanguage("Chinese");
+					break;
+				case 2:
+			        LoadLanguage("English");
+					break;
+	        }
+            
         }
 
         /// <summary>

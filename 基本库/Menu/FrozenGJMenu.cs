@@ -11,11 +11,11 @@ namespace LeagueSharp.Common {
 		public static Menu Menu { get; private set; }
 		public static Menu Draw { get; private set; }
 		public static Menu PingBlocker { get; private set; }
+		public static Menu Info { get; private set; }
+		public static Menu Language { get; private set; }
 		public static bool DisableDrawings { get; private set; }
 		public static float EndTime { get; private set; }
-		public static Menu Info { get; private set; }
 		public static bool DrawWaterMark { get; private set; } = true;
-
 		public static Font WaterMarkFont { get; private set; }
 
 		public static void Initialize() {
@@ -43,7 +43,7 @@ namespace LeagueSharp.Common {
 			 };
 			Info.AddItem(new MenuItem("Info0", ""));
 			Info.AddItem(new MenuItem("Info1", "版权归属L#，部分代码归代码作者"));
-			
+
 			CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
 			Drawing.OnDraw += Drawing_OnDraw;
 		}
@@ -64,10 +64,6 @@ namespace LeagueSharp.Common {
 					Drawing.Height * 49 / 100,
 					new ColorBGRA(Color.Goldenrod.R, Color.Goldenrod.G, Color.Goldenrod.B, Color.Goldenrod.A));
 
-				//WaterMarkFont.DrawText(null, "致力于做到最好！",
-				//	Drawing.Width * 55 / 100,
-				//	Drawing.Height * 49 / 100,
-				//	new ColorBGRA(Color.Goldenrod.R, Color.Goldenrod.G, Color.Goldenrod.B, Color.Goldenrod.A));
 			}
 		}
 
@@ -82,6 +78,7 @@ namespace LeagueSharp.Common {
 			}
 
 			DrawWaterMark = false;
+			WaterMarkFont.Dispose();
 			ShowLogo();
 
 			DisableDrawings = LeagueSharp.Hacks.DisableDrawings;
@@ -109,6 +106,10 @@ namespace LeagueSharp.Common {
 			PingBlocker.AddItem(new MenuItem("pb3", ""));
 			PingBlocker.AddItem(new MenuItem("pb1", "屏蔽信号不能分辨是脚本打的").SetFontStyle(FontStyle.Regular, SharpDX.Color.Gold));
 			PingBlocker.AddItem(new MenuItem("pb2", "还是手动打的，会统一处理").SetFontStyle(FontStyle.Regular, SharpDX.Color.Gold));
+
+			Language = new Menu("语言设置", "语言设置");
+			Language.AddItem(new MenuItem("语言", "强制菜单使用以下语言").SetValue(new StringList(new []{"默认","中文","英文"}, 1)));
+			Language.AddItem(new MenuItem("33", "更换语言后需要F5重载脚本生效"));
 
 			Game.OnPing += Game_OnPing;
 			Game.OnNotify += Game_OnNotify;

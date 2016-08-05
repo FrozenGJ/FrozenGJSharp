@@ -457,7 +457,7 @@ namespace Evade
                     return;
                 }
 #if DEBUG
-                Console.WriteLine(Utils.TickCount + "Adding new skillshot: " + skillshot.SpellData.SpellName);
+                //Console.WriteLine(Utils.TickCount + "Adding new skillshot: " + skillshot.SpellData.SpellName);
 #endif
 
                 DetectedSkillshots.Add(skillshot);
@@ -489,7 +489,8 @@ namespace Evade
 
             //Evading disabled
             if (!Config.Menu.Item("Enabled").GetValue<KeyBind>().Active
-				|| Config.Menu.Item("ChatDisable").GetValue<bool>() && MenuGUI.IsChatOpen)
+				|| Config.Menu.Item("ChatDisable").GetValue<bool>() && MenuGUI.IsChatOpen
+				)
             {
                 Evading = false;
                 return;
@@ -992,6 +993,13 @@ namespace Evade
             {
                 dangerLevel = Math.Max(dangerLevel, skillshot.GetValue<Slider>("DangerLevel").Value);
             }
+			//修改
+			var debr = Config.Menu.Item("DisableEvadeByRandom").GetValue<bool>();
+			var r = new Random().Next(1, 11) > 1;
+			if (dangerLevel == 1 && (!debr || r))
+	        {
+		        return;
+	        }
 
             foreach (var evadeSpell in EvadeSpellDatabase.Spells)
             {
@@ -1013,7 +1021,9 @@ namespace Evade
                     //Walking
                     if (evadeSpell.Name == "Walking")
                     {
-                        var points = Evader.GetEvadePoints();
+						
+
+						var points = Evader.GetEvadePoints();
                         if (points.Count > 0)
                         {
                             EvadePoint = to.Closest(points);

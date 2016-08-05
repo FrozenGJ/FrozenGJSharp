@@ -48,7 +48,10 @@ namespace LeagueSharp.Common {
 				color = Color.Goldenrod;
 			}
 			string msg = news.AddBlank().ToHtml(color, fontStlye);
-			Game.PrintChat("[FrozenGJ新闻]：".ToHtml(Color.RoyalBlue)+ msg);
+			
+			Game.PrintChat("====[FrozenGJ新闻]：=============".ToHtml(Color.Goldenrod) + msg);
+			Game.PrintChat(msg);
+			Game.PrintChat("=================================".ToHtml(Color.Goldenrod) + msg);
 		}
 
 		public static void Info(string assemblyName, string info = "已加载。。。　", int delay = 0) {

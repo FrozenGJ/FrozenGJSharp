@@ -118,7 +118,7 @@ namespace Evade
                 if (ally.IsAlly && !ally.IsMe)
                 {
                     shielding.AddItem(
-                        new MenuItem("shield" + ally.ChampionName, "Shield " + ally.ChampionName).SetValue(true));
+                        new MenuItem("shield" + ally.ChampionName, "Shield " + ally.CnName()).SetValue(true));
                 }
             }
             Menu.AddSubMenu(shielding);
@@ -155,6 +155,7 @@ namespace Evade
             Menu.AddSubMenu(misc);
 
 	        Menu.AddItem(new MenuItem("ChatDisable", "打字时禁止躲避").SetValue(true));
+	        Menu.AddItem(new MenuItem("DisableEvadeByRandom", "随机不躲小技能").SetValue(false));
 
             Menu.AddItem(
                 new MenuItem("Enabled", "Enabled").SetValue(new KeyBind("K".ToCharArray()[0], KeyBindType.Toggle, true))).Permashow(true, "Evade");
