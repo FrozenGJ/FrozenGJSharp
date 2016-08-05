@@ -85,7 +85,7 @@ namespace LeagueSharp.SDK.TSModes
             foreach (var enemy in GameObjects.EnemyHeroes)
             {
                 priorityMenu.Add(
-                    new MenuSlider(enemy.ChampionName, enemy.ChampionName, MinPriority, MinPriority, MaxPriority));
+                    new MenuSlider(enemy.Name, enemy.ChampionName, MinPriority, MinPriority, MaxPriority));
             }
 
             priorityMenu.Add(new MenuBool("autoPriority", "Auto Priority"));
@@ -141,7 +141,7 @@ namespace LeagueSharp.SDK.TSModes
         /// </returns>
         public int GetPriority(Obj_AI_Hero hero)
         {
-            return this.menu?["priority"][hero.ChampionName]?.GetValue<MenuSlider>().Value ?? MinPriority;
+            return this.menu?["priority"][hero.Name]?.GetValue<MenuSlider>().Value ?? MinPriority;
         }
 
         /// <inheritdoc />
@@ -161,7 +161,7 @@ namespace LeagueSharp.SDK.TSModes
         /// </param>
         public void SetPriority(Obj_AI_Hero hero, int value)
         {
-            var item = this.menu?["priority"][hero.ChampionName];
+            var item = this.menu?["priority"][hero.Name];
             if (item != null)
             {
                 item.GetValue<MenuSlider>().Value = Math.Max(MinPriority, Math.Min(MaxPriority, value));

@@ -250,13 +250,13 @@ namespace LeagueSharp.Common
                 foreach (var enemy in HeroManager.Enemies)
                 {
                     config.AddItem(
-                        new MenuItem("TargetSelector" + enemy.ChampionName + "Priority", enemy.ChampionName).SetShared()
+                        new MenuItem("TargetSelector" + enemy.Name + "Priority", enemy.ChampionName).SetShared()
                             .SetValue(
                                 new Slider(
                                     autoPriorityItem.GetValue<bool>() ? GetPriorityFromDb(enemy.ChampionName) : 1, 5, 1)));
                     if (autoPriorityItem.GetValue<bool>())
                     {
-                        config.Item("TargetSelector" + enemy.ChampionName + "Priority")
+                        config.Item("TargetSelector" + enemy.Name + "Priority")
                             .SetValue(
                                 new Slider(
                                     autoPriorityItem.GetValue<bool>() ? GetPriorityFromDb(enemy.ChampionName) : 1, 5, 1));
@@ -291,7 +291,7 @@ namespace LeagueSharp.Common
             }
             foreach (var enemy in HeroManager.Enemies)
             {
-                _configMenu.Item("TargetSelector" + enemy.ChampionName + "Priority")
+                _configMenu.Item("TargetSelector" + enemy.Name + "Priority")
                     .SetValue(new Slider(GetPriorityFromDb(enemy.ChampionName), 5, 1));
             }
         }
