@@ -135,13 +135,13 @@ namespace SFXUtility.Features.Timers
                         new StringList(new[] { "mm:ss", "ss" })));
                 drawingMenu.AddItem(
                     new MenuItem(drawingMenu.Name + "FontSize", "Font Size").SetValue(new Slider(13, 3, 30)));
-                drawingMenu.AddItem(new MenuItem(drawingMenu.Name + "Enemy", "Enemy").SetValue(false));
-                drawingMenu.AddItem(new MenuItem(drawingMenu.Name + "Ally", "Ally").SetValue(false));
+                drawingMenu.AddItem(new MenuItem(drawingMenu.Name + "Enemy", "Enemy").SetValue(true));
+                drawingMenu.AddItem(new MenuItem(drawingMenu.Name + "Ally", "Ally").SetValue(true));
                 drawingMenu.AddItem(new MenuItem(drawingMenu.Name + "Self", "Self").SetValue(false));
 
                 Menu.AddSubMenu(drawingMenu);
 
-                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(true));
 
                 Menu.Item(Name + "DrawingEnemy").ValueChanged += delegate(object o, OnValueChangeEventArgs args)
                 {

@@ -10,7 +10,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
     class Darius
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         public Spell Q, W, E, R;
         private float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         private Obj_AI_Hero Player { get { return ObjectManager.Player; } }
@@ -28,8 +28,8 @@ namespace OneKeyToWin_AIO_Sebby.Champions
 
             Game.OnUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-            LeagueSharp.Common.Orbwalking.BeforeAttack += BeforeAttack;
-            LeagueSharp.Common.Orbwalking.AfterAttack += afterAttack;
+            SebbyLib.Orbwalking.BeforeAttack += BeforeAttack;
+            SebbyLib.Orbwalking.AfterAttack += afterAttack;
             Interrupter.OnPossibleToInterrupt += OnInterruptableSpell;
         }
 
@@ -72,7 +72,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
 
         }
 
-        private void BeforeAttack(LeagueSharp.Common.Orbwalking.BeforeAttackEventArgs args)
+        private void BeforeAttack(SebbyLib.Orbwalking.BeforeAttackEventArgs args)
         {
 
 
@@ -127,7 +127,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                 var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);
                 if (target.IsValidTarget() && ((Player.UnderTurret(false) && !Player.UnderTurret(true)) || Program.Combo) )
                 {
-                    if (!LeagueSharp.Common.Orbwalking.InAutoAttackRange(target))
+                    if (!SebbyLib.Orbwalking.InAutoAttackRange(target))
                     {
                         E.Cast(target);
                     }
@@ -140,7 +140,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             var t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
             if (t.IsValidTarget())
             {
-                if (!Config.Item("qOutRange", true).GetValue<bool>() || LeagueSharp.Common.Orbwalking.InAutoAttackRange(t))
+                if (!Config.Item("qOutRange", true).GetValue<bool>() || SebbyLib.Orbwalking.InAutoAttackRange(t))
                 {
                     if (Player.Mana > RMANA + QMANA && Program.Combo)
                         Q.Cast();

@@ -335,8 +335,8 @@ namespace SFXUtility.Features.Drawings
                 var turretMenu = new Menu("Turret", Name + "Turret");
                 turretMenu.AddItem(new MenuItem(turretMenu.Name + "ColorAlly", "Color Ally").SetValue(Color.DarkGreen));
                 turretMenu.AddItem(new MenuItem(turretMenu.Name + "ColorEnemy", "Color Enemy").SetValue(Color.DarkRed));
-                turretMenu.AddItem(new MenuItem(turretMenu.Name + "Ally", "Ally").SetValue(false));
-                turretMenu.AddItem(new MenuItem(turretMenu.Name + "Enemy", "Enemy").SetValue(false));
+                turretMenu.AddItem(new MenuItem(turretMenu.Name + "Ally", "Ally").SetValue(true));
+                turretMenu.AddItem(new MenuItem(turretMenu.Name + "Enemy", "Enemy").SetValue(true));
 
                 var shopMenu = new Menu("Shop", Name + "Shop");
                 shopMenu.AddItem(new MenuItem(shopMenu.Name + "ColorAlly", "Color Ally").SetValue(Color.DarkGreen));
@@ -391,7 +391,7 @@ namespace SFXUtility.Features.Drawings
                 Menu.AddSubMenu(shopMenu);
                 Menu.AddSubMenu(spellMenu);
 
-                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(true));
 
                 Parent.Menu.AddSubMenu(Menu);
             }

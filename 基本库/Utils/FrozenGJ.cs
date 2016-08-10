@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.UI;
+using SharpDX;
+using SharpDX.Direct3D9;
 using Color = System.Drawing.Color;
-using Font = SharpDX.Direct3D9.Font;
-using global::SharpDX;
-using global::SharpDX.Direct3D9;
 
 namespace LeagueSharp.Common {
 	public static class FrozenGJ {
-		
+
 
 		public static Font DrawFont { get; set; } = new Font(Drawing.Direct3DDevice, new FontDescription
 		{
@@ -41,17 +38,25 @@ namespace LeagueSharp.Common {
 			font.DrawText(sprite, MultiLanguage._(text), x, y, color);
 		}
 
-		public static void News(string news,Color color = default(Color), FontStlye fontStlye = FontStlye.Bold)
-		{
+		public static void News(string news, Color color = default(Color), FontStlye fontStlye = FontStlye.Bold) {
 			if (color == default(Color))
 			{
 				color = Color.Goldenrod;
 			}
 			string msg = news.AddBlank().ToHtml(color, fontStlye);
+
 			
-			Game.PrintChat("====[FrozenGJ新闻]：=============".ToHtml(Color.Goldenrod) + msg);
-			Game.PrintChat(msg);
-			Game.PrintChat("=================================".ToHtml(Color.Goldenrod) + msg);
+
+			var n = "\n" 
+					+ "====[FrozenGJ新闻]=====".ToHtml(Color.Goldenrod) + "\n"
+			        + msg + "\n"
+			        + "=====================".ToHtml(Color.Goldenrod);
+
+			Game.PrintChat(n);
+
+			//Game.PrintChat("====[FrozenGJ新闻]：=========".ToHtml(Color.Goldenrod));
+			//Game.PrintChat(msg);
+			//Game.PrintChat("=============================".ToHtml(Color.Goldenrod));
 		}
 
 		public static void Info(string assemblyName, string info = "已加载。。。　", int delay = 0) {
@@ -88,11 +93,12 @@ namespace LeagueSharp.Common {
 
 					catch (Exception e)
 					{
-						Console.WriteLine("抓取新闻失败");
+						Console.WriteLine("抓取新闻失败"+e.Message);
 						return "";
 					}
 				});
 			return News;
 		}
 	}
+
 }

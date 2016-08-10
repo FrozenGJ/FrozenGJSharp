@@ -10,7 +10,7 @@ namespace OneKeyToWin_AIO_Sebby
     class MissFortune
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Spell E, Q, Q1, R, W;
         private float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
@@ -68,7 +68,7 @@ namespace OneKeyToWin_AIO_Sebby
 
             Game.OnUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-            LeagueSharp.Common.Orbwalking.AfterAttack += afterAttack;
+            SebbyLib.Orbwalking.AfterAttack += afterAttack;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
         }
 
@@ -92,8 +92,8 @@ namespace OneKeyToWin_AIO_Sebby
             {
                 RCastTime = Game.Time;
                 Program.debug(args.SData.Name);
-                LeagueSharp.Common.Orbwalking.Attack = false;
-                LeagueSharp.Common.Orbwalking.Move = false;
+                SebbyLib.Orbwalking.Attack = false;
+                SebbyLib.Orbwalking.Move = false;
                 if (Config.Item("forceBlockMove", true).GetValue<bool>())
                 {
                     OktwCommon.blockMove = true;
@@ -123,7 +123,7 @@ namespace OneKeyToWin_AIO_Sebby
                 }
                 if (W.IsReady())
                 {
-                    if (Orbwalker.ActiveMode == LeagueSharp.Common.Orbwalking.OrbwalkingMode.Combo && Player.Mana > RMANA + WMANA && Config.Item("autoW", true).GetValue<bool>())
+                    if (Orbwalker.ActiveMode == SebbyLib.Orbwalking.OrbwalkingMode.Combo && Player.Mana > RMANA + WMANA && Config.Item("autoW", true).GetValue<bool>())
                         W.Cast();
                     else if (Player.Mana > RMANA + WMANA + QMANA && Config.Item("harasW", true).GetValue<bool>())
                         W.Cast();
@@ -153,7 +153,7 @@ namespace OneKeyToWin_AIO_Sebby
                 if (mobs.Count > 0)
                 {
                     var mob = mobs[0];
-                    if (Q.IsReady() && Config.Item("jungleQ", true).GetValue<bool>() && !LeagueSharp.Common.Orbwalking.CanAttack() && !Player.IsWindingUp)
+                    if (Q.IsReady() && Config.Item("jungleQ", true).GetValue<bool>() && !SebbyLib.Orbwalking.CanAttack() && !Player.IsWindingUp)
                     {
                         Q.Cast(mob);
                         return;
@@ -176,8 +176,8 @@ namespace OneKeyToWin_AIO_Sebby
         {
             if (Config.Item("disableBlock", true).GetValue<KeyBind>().Active)
             {
-                LeagueSharp.Common.Orbwalking.Attack = true;
-                LeagueSharp.Common.Orbwalking.Move = true;
+                SebbyLib.Orbwalking.Attack = true;
+                SebbyLib.Orbwalking.Move = true;
                 OktwCommon.blockSpells = false;
                 OktwCommon.blockAttack = false;
                 OktwCommon.blockMove = false;
@@ -192,16 +192,16 @@ namespace OneKeyToWin_AIO_Sebby
                     OktwCommon.blockSpells = true;
                 }
 
-                LeagueSharp.Common.Orbwalking.Attack = false;
-                LeagueSharp.Common.Orbwalking.Move = false;
+                SebbyLib.Orbwalking.Attack = false;
+                SebbyLib.Orbwalking.Move = false;
                
                 Program.debug("cast R");
                 return;
             }
             else
             {
-                LeagueSharp.Common.Orbwalking.Attack = true;
-                LeagueSharp.Common.Orbwalking.Move = true;
+                SebbyLib.Orbwalking.Attack = true;
+                SebbyLib.Orbwalking.Move = true;
                 if (Config.Item("forceBlockMove", true).GetValue<bool>())
                 {
                     OktwCommon.blockAttack = false;
@@ -232,7 +232,7 @@ namespace OneKeyToWin_AIO_Sebby
                 if (t2.IsValidTarget() && t2.NetworkId == LastAttackId)
                 {
                     var ta = HeroManager.Enemies.Where(enemy => 
-                        enemy.IsValidTarget() && LeagueSharp.Common.Orbwalking.InAutoAttackRange(enemy) 
+                        enemy.IsValidTarget() && SebbyLib.Orbwalking.InAutoAttackRange(enemy) 
                             && (enemy.NetworkId != LastAttackId || enemy.Health < Player.GetAutoAttackDamage(enemy) * 2) ).FirstOrDefault();
 
                     if (ta!=null)
@@ -334,7 +334,7 @@ namespace OneKeyToWin_AIO_Sebby
                     Program.CastSpell(E, t);
                 else if (Program.Combo && Player.Mana > RMANA + WMANA + QMANA + EMANA)
                 {
-                    if (!LeagueSharp.Common.Orbwalking.InAutoAttackRange(t) || Player.CountEnemiesInRange(300) > 0 || t.CountEnemiesInRange(250) > 1)
+                    if (!SebbyLib.Orbwalking.InAutoAttackRange(t) || Player.CountEnemiesInRange(300) > 0 || t.CountEnemiesInRange(250) > 1)
                         Program.CastSpell(E, t);
                     else 
                     {

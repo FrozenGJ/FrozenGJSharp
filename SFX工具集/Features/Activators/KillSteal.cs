@@ -65,10 +65,10 @@ namespace SFXUtility.Features.Activators
             try
             {
                 Menu = new Menu(Name, Name);
-                Menu.AddItem(new MenuItem(Name + "Summoners", "Summoners").SetValue(false));
-                Menu.AddItem(new MenuItem(Name + "Items", "Items").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Summoners", "Summoners").SetValue(true));
+                Menu.AddItem(new MenuItem(Name + "Items", "Items").SetValue(true));
 
-                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(true));
 
                 Parent.Menu.AddSubMenu(Menu);
             }

@@ -11,11 +11,11 @@ namespace OneKeyToWin_AIO_Sebby.Core
     class OKTWdraws
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Obj_AI_Hero Player { get { return ObjectManager.Player; } }
         public Spell Q, W, E, R, DrawSpell;
         public static Font Tahoma13, Tahoma13B, TextBold;
-        private float spellFarmTimer = 0, IntroTimer = Game.Time;
+        private float IntroTimer = Game.Time;
         private Render.Sprite Intro;
 
         public void LoadOKTW()
@@ -29,7 +29,7 @@ namespace OneKeyToWin_AIO_Sebby.Core
             //    Intro.OnDraw();
             //}
 
-            //Utility.DelayAction.Add(7000, () => Intro.Remove());
+            Utility.DelayAction.Add(7000, () => Intro.Remove());
 
             Config.SubMenu("Utility, Draws OKTW©").AddItem(new MenuItem("disableDraws", "DISABLE UTILITY DRAWS").SetValue(false));
 
@@ -43,17 +43,9 @@ namespace OneKeyToWin_AIO_Sebby.Core
             Config.SubMenu("Utility, Draws OKTW©").AddItem(new MenuItem("HpBar", "Dmg indicators BAR OKTW© style").SetValue(true));
             Config.SubMenu("Utility, Draws OKTW©").AddItem(new MenuItem("ShowClicks", "Show enemy clicks").SetValue(true));
             Config.SubMenu("Utility, Draws OKTW©").AddItem(new MenuItem("SS", "SS notification").SetValue(true));
+            Config.SubMenu("Utility, Draws OKTW©").AddItem(new MenuItem("RF", "R and Flash notification").SetValue(true));
             Config.SubMenu("Utility, Draws OKTW©").AddItem(new MenuItem("showWards", "Show hidden objects, wards").SetValue(true));
             Config.SubMenu("Utility, Draws OKTW©").AddItem(new MenuItem("minimap", "Mini-map hack").SetValue(true));
-
-            if (Program.AIOmode != 2)
-            {
-                Config.SubMenu(Player.ChampionName).SubMenu("Farm").SubMenu("SPELLS FARM TOGGLE").AddItem(new MenuItem("spellFarm", "OKTW spells farm").SetValue(true)).Show();
-                Config.SubMenu(Player.ChampionName).SubMenu("Farm").SubMenu("SPELLS FARM TOGGLE").AddItem(new MenuItem("spellFarmMode", "SPELLS FARM TOGGLE MODE").SetValue(new StringList(new[] { "Scroll down", "Scroll press", "Key toggle", "Disable" }, 1)));
-                Config.SubMenu(Player.ChampionName).SubMenu("Farm").SubMenu("SPELLS FARM TOGGLE").AddItem(new MenuItem("spellFarmKeyToggle", "Key toggle").SetValue(new KeyBind("N".ToCharArray()[0], KeyBindType.Toggle)));
-                Config.SubMenu(Player.ChampionName).SubMenu("Farm").SubMenu("SPELLS FARM TOGGLE").AddItem(new MenuItem("showNot", "Show notification").SetValue(true));
-                Config.Item("spellFarm").Permashow(true);
-            }
 
             Tahoma13B = new Font( Drawing.Direct3DDevice, new FontDescription
                { FaceName = "Tahoma", Height = 14, Weight = FontWeight.Bold, OutputPrecision = FontPrecision.Default, Quality = FontQuality.ClearType });
@@ -69,100 +61,8 @@ namespace OneKeyToWin_AIO_Sebby.Core
             W = new Spell(SpellSlot.W);
             R = new Spell(SpellSlot.R);
 
-            Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += OnDraw;
             Drawing.OnEndScene += Drawing_OnEndScene;
-            Game.OnWndProc += Game_OnWndProc;
-
-        }
-
-        private void Game_OnWndProc(WndEventArgs args)
-        {
-            if (Program.AIOmode == 2)
-                return;
-            if (Config.Item("spellFarm") == null || Config.Item("spellFarmMode").GetValue<StringList>().SelectedIndex == 3)
-            return;
-
-            if ((Config.Item("spellFarmMode").GetValue<StringList>().SelectedIndex == 0 && args.Msg == 0x20a)
-                || (Config.Item("spellFarmMode").GetValue<StringList>().SelectedIndex == 1 && args.Msg == 520)
-                )
-            {
-                if (!Config.Item("spellFarm").GetValue<bool>())
-                {
-                    Config.Item("spellFarm").SetValue<bool>(true);
-                    spellFarmTimer = Game.Time;
-
-                    if(Config.Item("farmQ", true) != null)
-                        Config.Item("farmQ", true).SetValue<bool>(true);
-
-                    if (Config.Item("farmW", true) != null)
-                        Config.Item("farmW", true).SetValue<bool>(true);
-
-                    if (Config.Item("farmE", true) != null)
-                        Config.Item("farmE", true).SetValue<bool>(true);
-
-                    if (Config.Item("farmR", true) != null)
-                        Config.Item("farmR", true).SetValue<bool>(true);
-                }
-                else
-                {
-                    Config.Item("spellFarm").SetValue<bool>(false);
-                    spellFarmTimer = Game.Time;
-
-                    if (Config.Item("farmQ", true) != null)
-                        Config.Item("farmQ", true).SetValue<bool>(false);
-
-                    if (Config.Item("farmW", true) != null)
-                        Config.Item("farmW", true).SetValue<bool>(false);
-
-                    if (Config.Item("farmE", true) != null)
-                        Config.Item("farmE", true).SetValue<bool>(false);
-
-                    if (Config.Item("farmR", true) != null)
-                        Config.Item("farmR", true).SetValue<bool>(false);
-                }
-            }
-        }
-
-        private void Game_OnUpdate(EventArgs args)
-        {
-            if (Program.LagFree(0) && Program.AIOmode != 2 && Config.Item("spellFarmMode").GetValue<StringList>().SelectedIndex != 3 && Config.Item("spellFarm") != null && Config.Item("spellFarmMode").GetValue<StringList>().SelectedIndex == 2 && Config.Item("spellFarmKeyToggle").GetValue<KeyBind>().Active != Config.Item("spellFarm").GetValue<bool>())
-            {
-                if (Config.Item("spellFarmKeyToggle").GetValue<KeyBind>().Active )
-                {
-                    Config.Item("spellFarm").SetValue<bool>(true);
-                    spellFarmTimer = Game.Time;
-
-                    if (Config.Item("farmQ", true) != null)
-                        Config.Item("farmQ", true).SetValue<bool>(true);
-
-                    if (Config.Item("farmW", true) != null)
-                        Config.Item("farmW", true).SetValue<bool>(true);
-
-                    if (Config.Item("farmE", true) != null)
-                        Config.Item("farmE", true).SetValue<bool>(true);
-
-                    if (Config.Item("farmR", true) != null)
-                        Config.Item("farmR", true).SetValue<bool>(true);
-                }
-                else
-                {
-                    Config.Item("spellFarm").SetValue<bool>(false);
-                    spellFarmTimer = Game.Time;
-
-                    if (Config.Item("farmQ", true) != null)
-                        Config.Item("farmQ", true).SetValue<bool>(false);
-
-                    if (Config.Item("farmW", true) != null)
-                        Config.Item("farmW", true).SetValue<bool>(false);
-
-                    if (Config.Item("farmE", true) != null)
-                        Config.Item("farmE", true).SetValue<bool>(false);
-
-                    if (Config.Item("farmR", true) != null)
-                        Config.Item("farmR", true).SetValue<bool>(false);
-                }
-            }
         }
 
         private static System.Drawing.Bitmap LoadImg(string imgName)
@@ -241,7 +141,6 @@ namespace OneKeyToWin_AIO_Sebby.Core
 
         private void OnDraw(EventArgs args)
         {
-           
             if (Config.Item("disableDraws").GetValue<bool>())
                 return;
 
@@ -269,15 +168,6 @@ namespace OneKeyToWin_AIO_Sebby.Core
                 }
             }
 
-            if (Program.AIOmode != 2 && spellFarmTimer + 1 > Game.Time && Config.Item("showNot").GetValue<bool>() && Config.Item("spellFarm") != null )
-            {
-                if (Config.Item("spellFarm").GetValue<bool>())
-                    DrawFontTextScreen(TextBold, "SPELLS FARM ON", Drawing.Width * 0.5f, Drawing.Height * 0.4f, SharpDX.Color.GreenYellow);
-                else
-                    DrawFontTextScreen(TextBold, "SPELLS FARM OFF", Drawing.Width * 0.5f , Drawing.Height * 0.4f, SharpDX.Color.OrangeRed);
-            }
-            
-
             bool blink = true;
 
             if ((int)(Game.Time * 10) % 2 == 0)
@@ -303,9 +193,10 @@ namespace OneKeyToWin_AIO_Sebby.Core
                 
             foreach (var enemy in HeroManager.Enemies)
             {
+                offset += 0.15f;
+
                 if (Config.Item("SS").GetValue<bool>())
                 {
-                    offset += 0.15f;
                     if (!enemy.IsVisible && !enemy.IsDead)
                     {
                         var ChampionInfoOne = OKTWtracker.ChampionInfoList.Find(x => x.NetworkId == enemy.NetworkId);
@@ -313,11 +204,11 @@ namespace OneKeyToWin_AIO_Sebby.Core
                         {
                             if ((int)(Game.Time * 10) % 2 == 0 && Game.Time - ChampionInfoOne.LastVisableTime > 3 && Game.Time - ChampionInfoOne.LastVisableTime < 7)
                             {
-                                DrawFontTextScreen(TextBold, "SS " + enemy.ChampionName + " " + (int)(Game.Time - ChampionInfoOne.LastVisableTime), Drawing.Width * offset, Drawing.Height * 0.02f, SharpDX.Color.OrangeRed);
+                                DrawFontTextScreen(TextBold, "SS " + enemy.ChampionName + " " + (int)(Game.Time - ChampionInfoOne.LastVisableTime), Drawing.Width * offset, Drawing.Height * 0.02f, SharpDX.Color.Orange);
                             }
                             if (Game.Time - ChampionInfoOne.LastVisableTime >= 7)
                             {
-                                DrawFontTextScreen(TextBold, "SS " + enemy.ChampionName + " " + (int)(Game.Time - ChampionInfoOne.LastVisableTime), Drawing.Width * offset, Drawing.Height * 0.02f, SharpDX.Color.OrangeRed);
+                                DrawFontTextScreen(TextBold, "SS " + enemy.ChampionName + " " + (int)(Game.Time - ChampionInfoOne.LastVisableTime), Drawing.Width * offset, Drawing.Height * 0.02f, SharpDX.Color.Orange);
                             }
                         }
                     }
@@ -433,8 +324,6 @@ namespace OneKeyToWin_AIO_Sebby.Core
                         }
                     }
 
-                    if (ShowKDA)
-                    {
                         var fSlot = enemy.Spellbook.Spells[4];
    
                         if (fSlot.Name != "SummonerFlash")
@@ -443,26 +332,51 @@ namespace OneKeyToWin_AIO_Sebby.Core
                         if (fSlot.Name == "SummonerFlash")
                         {
                             var fT = fSlot.CooldownExpires - Game.Time;
-                            if (fT < 0)
-                                DrawFontTextScreen(Tahoma13, "F rdy", posX + 110, posY + positionDraw, SharpDX.Color.GreenYellow);
-                            else
-                                DrawFontTextScreen(Tahoma13, "F " + (int)fT, posX + 110, posY + positionDraw, SharpDX.Color.Yellow);
+                            if (ShowKDA)
+                            {
+                                if (fT < 0)
+                                    DrawFontTextScreen(Tahoma13, "F rdy", posX + 110, posY + positionDraw, SharpDX.Color.GreenYellow);
+                                else
+                                    DrawFontTextScreen(Tahoma13, "F " + (int)fT, posX + 110, posY + positionDraw, SharpDX.Color.Yellow);
+                            }
+                            if (Config.Item("RF").GetValue<bool>())
+                            {
+                                if (fT < 2 && fT > -3)
+                                {
+                                    DrawFontTextScreen(TextBold, enemy.ChampionName + " FLASH READY!", Drawing.Width * offset, Drawing.Height * 0.1f, SharpDX.Color.Yellow);
+                                }
+                                else if (fSlot.Cooldown - fT < 5)
+                                {
+                                    DrawFontTextScreen(TextBold, enemy.ChampionName + " FLASH LOST!", Drawing.Width * offset, Drawing.Height * 0.1f, SharpDX.Color.Red);
+                                }
+                            }
                         }
 
                         if (enemy.Level > 5)
                         {
                             var rSlot = enemy.Spellbook.Spells[3];
                             var t = rSlot.CooldownExpires - Game.Time;
-
-                            if (t < 0)
-                                DrawFontTextScreen(Tahoma13, "R rdy", posX + 145, posY + positionDraw, SharpDX.Color.GreenYellow);
-                            else
-                                DrawFontTextScreen(Tahoma13, "R " + (int)t, posX + 145, posY + positionDraw, SharpDX.Color.Yellow);
+                            if (ShowKDA)
+                            {
+                                if (t < 0)
+                                    DrawFontTextScreen(Tahoma13, "R rdy", posX + 145, posY + positionDraw, SharpDX.Color.GreenYellow);
+                                else
+                                    DrawFontTextScreen(Tahoma13, "R " + (int)t, posX + 145, posY + positionDraw, SharpDX.Color.Yellow);
+                            }
+                            if (Config.Item("RF").GetValue<bool>())
+                            {
+                                if (t < 2 && t > -3)
+                                {
+                                    DrawFontTextScreen(TextBold, enemy.ChampionName + " R READY!", Drawing.Width * offset, Drawing.Height * 0.2f, SharpDX.Color.YellowGreen);
+                                }
+                                else if (rSlot.Cooldown - t < 5)
+                                {
+                                    DrawFontTextScreen(TextBold, enemy.ChampionName + " R LOST!", Drawing.Width * offset, Drawing.Height * 0.1f, SharpDX.Color.Red);
+                                }
+                            }
                         }
-                        else
-                            DrawFontTextScreen(Tahoma13, "R ", posX + 145, posY + positionDraw, SharpDX.Color.Yellow);
-                    }
-                    
+                        else if (ShowKDA)
+                            DrawFontTextScreen(Tahoma13, "R ", posX + 145, posY + positionDraw, SharpDX.Color.Yellow);  
                     //Drawing.DrawText(posX - 70, posY + positionDraw, kolor, enemy.Level + " lvl");
                 }
 
@@ -510,7 +424,7 @@ namespace OneKeyToWin_AIO_Sebby.Core
                     }
   
 
-                    if (Distance < 3500 && enemy.IsVisible && !Render.OnScreen(Drawing.WorldToScreen(enemy.Position)))
+                    if (Distance < 3500 && enemy.IsVisible && !Render.OnScreen(Drawing.WorldToScreen(enemy.Position)) && Program.jungler != null)
                     {
                         if (Program.jungler.NetworkId == enemy.NetworkId)
                         {
@@ -541,7 +455,6 @@ namespace OneKeyToWin_AIO_Sebby.Core
             {
                 Drawing.DrawText(Drawing.Width * 0.2f, Drawing.Height * 1f, System.Drawing.Color.Cyan, "OKTW AIO only utility mode ON");
             }
-
         }
     }
 }

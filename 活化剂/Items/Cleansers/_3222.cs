@@ -1,6 +1,5 @@
 ﻿using System;
 using Activator.Base;
-using Activator.Handlers;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -39,7 +38,7 @@ namespace Activator.Items.Cleansers
                     hero.MikaelsHighestBuffTime = 0;
                 }
 
-                Buffs.CheckMikaels(hero.Player);
+                Helpers.CheckMikaels(hero.Player);
 
                 if (hero.MikaelsBuffCount >= Menu.Item("use" + Name + "number").GetValue<Slider>().Value &&
                     hero.MikaelsHighestBuffTime >= Menu.Item("use" + Name + "time").GetValue<Slider>().Value)

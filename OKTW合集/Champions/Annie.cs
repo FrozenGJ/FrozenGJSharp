@@ -9,7 +9,7 @@ namespace OneKeyToWin_AIO_Sebby
     class Annie
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         public Spell Q, W, E, R, FR;
         public float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         private SpellSlot flash;

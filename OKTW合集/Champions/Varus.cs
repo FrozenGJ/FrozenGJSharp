@@ -10,7 +10,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
     class Varus
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Spell Q, W, E, R;
         private float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
@@ -57,8 +57,8 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             Game.OnUpdate += Game_OnGameUpdate;
 
             Drawing.OnDraw += Drawing_OnDraw;
-            //LeagueSharp.Common.Orbwalking.BeforeAttack += BeforeAttack;
-            //LeagueSharp.Common.Orbwalking.AfterAttack += afterAttack;
+            //SebbyLib.Orbwalking.BeforeAttack += BeforeAttack;
+            //SebbyLib.Orbwalking.AfterAttack += afterAttack;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
             //Spellbook.OnCastSpell += Spellbook_OnCastSpell;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
@@ -249,7 +249,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                     return;
                 }
 
-                if ((OktwCommon.GetBuffCount(t, "varuswdebuff") == 3 && CanCast && !E.IsReady()) || !LeagueSharp.Common.Orbwalking.InAutoAttackRange(t))
+                if ((OktwCommon.GetBuffCount(t, "varuswdebuff") == 3 && CanCast && !E.IsReady()) || !SebbyLib.Orbwalking.InAutoAttackRange(t))
                 {
                     if ((Program.Combo || (OktwCommon.GetBuffCount(t, "varuswdebuff") == 3 && Program.Farm)) && Player.Mana > RMANA + QMANA)
                     {
@@ -286,7 +286,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                 t = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);
             if (t.IsValidTarget())
             {
-                if ((OktwCommon.GetBuffCount(t, "varuswdebuff") == 3 && CanCast) || !LeagueSharp.Common.Orbwalking.InAutoAttackRange(t))
+                if ((OktwCommon.GetBuffCount(t, "varuswdebuff") == 3 && CanCast) || !SebbyLib.Orbwalking.InAutoAttackRange(t))
                 {
                     if (Program.Combo && Player.Mana > RMANA + QMANA)
                     {

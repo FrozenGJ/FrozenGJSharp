@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 using System.Drawing;
 
 namespace LeagueSharp.SDK.Utils {
-
 	/// <summary>
 	/// 扩展类
 	/// </summary>
 	public static class FrozenGJ {
 
-		
+
 
 		#region 文字转换类方法
 		/// <summary>

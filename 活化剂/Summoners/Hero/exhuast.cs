@@ -42,7 +42,7 @@ namespace Activator.Summoners
                     if (!Parent.Item(Parent.Name + "useon" + attacker.NetworkId).GetValue<bool>())
                         continue;
 
-                    if (Essentials.GetRole(attacker) == PrimaryRole.Support)
+                    if (Helpers.GetRole(attacker) == PrimaryRole.Support)
                         continue;
 
                     if (Menu.Item("use" + Name + "ulti").GetValue<bool>())

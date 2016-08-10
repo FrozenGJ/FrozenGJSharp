@@ -40,7 +40,7 @@ namespace Activator
 
                                 if (gitVersion != Activator.Version)
                                 {
-                                    Game.PrintChat("<font color=\"#FF6666\"><b>Activator#</b> - Outdated & newer version available!</font> (" + gitVersion + ")");
+                                    //Game.PrintChat("<font color=\"#FF6666\"><b>Activator#</b> - Outdated & newer version available!</font> (" + gitVersion + ")");
                                 }
                             }
                         }

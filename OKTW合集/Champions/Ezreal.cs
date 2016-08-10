@@ -5,16 +5,13 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using SebbyLib;
-using Orbwalking = LeagueSharp.Common.Orbwalking;
 
 namespace OneKeyToWin_AIO_Sebby
 {
     class Ezreal
     {
         private Menu Config = Program.Config;
-	    public static Orbwalking.Orbwalker Orbwalker;
-
-		//public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         public Spell Q, W, E, R;
         public float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
@@ -48,9 +45,7 @@ namespace OneKeyToWin_AIO_Sebby
             W.SetSkillshot(0.25f, 80f, 1600f, false, SkillshotType.SkillshotLine);
             R.SetSkillshot(1.1f, 160f, 2000f, false, SkillshotType.SkillshotLine);
 
-			Orbwalker= new Orbwalking.Orbwalker(Config.SubMenu(Player.ChampionName).SubMenu("走砍设置"));
-
-			Config.SubMenu(Player.ChampionName).SubMenu("Draw").AddItem(new MenuItem("noti", "Show notification", true).SetValue(false));
+            Config.SubMenu(Player.ChampionName).SubMenu("Draw").AddItem(new MenuItem("noti", "Show notification", true).SetValue(false));
             Config.SubMenu(Player.ChampionName).SubMenu("Draw").AddItem(new MenuItem("onlyRdy", "Draw only ready spells", true).SetValue(true));
             Config.SubMenu(Player.ChampionName).SubMenu("Draw").AddItem(new MenuItem("qRange", "Q range", true).SetValue(false));
             Config.SubMenu(Player.ChampionName).SubMenu("Draw").AddItem(new MenuItem("wRange", "W range", true).SetValue(false));
@@ -99,7 +94,7 @@ namespace OneKeyToWin_AIO_Sebby
 
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-            LeagueSharp.Common.Orbwalking.AfterAttack += afterAttack;
+            SebbyLib.Orbwalking.AfterAttack += afterAttack;
             Obj_AI_Base.OnBuffAdd += Obj_AI_Base_OnBuffAdd;
         }
 
@@ -195,6 +190,8 @@ namespace OneKeyToWin_AIO_Sebby
         {
             if (Program.LagFree(1))
             {
+                if (!SebbyLib.Orbwalking.CanMove(50) )
+                    return;
                 bool cc = !Program.None && Player.Mana > RMANA + QMANA + EMANA;
                 bool harass = Program.Farm && Player.ManaPercent > Config.Item("HarassMana", true).GetValue<Slider>().Value && OktwCommon.CanHarras();
 
@@ -286,7 +283,7 @@ namespace OneKeyToWin_AIO_Sebby
                 }
             }
 
-            if (t.IsValidTarget() && Program.Combo && Config.Item("EKsCombo", true).GetValue<bool>() && Player.HealthPercent > 40 && t.Distance(Game.CursorPos) + 300 < t.Position.Distance(Player.Position) && !LeagueSharp.Common.Orbwalking.InAutoAttackRange(t) && !Player.UnderTurret(true) && (Game.Time - OverKill > 0.3) )
+            if (t.IsValidTarget() && Program.Combo && Config.Item("EKsCombo", true).GetValue<bool>() && Player.HealthPercent > 40 && t.Distance(Game.CursorPos) + 300 < t.Position.Distance(Player.Position) && !SebbyLib.Orbwalking.InAutoAttackRange(t) && !Player.UnderTurret(true) && (Game.Time - OverKill > 0.3) )
             {
                 var dashPosition = Player.Position.Extend(Game.CursorPos, E.Range);
 
@@ -419,9 +416,8 @@ namespace OneKeyToWin_AIO_Sebby
 
         private bool Farm
         {
-            //get { return (Orbwalker.ActiveMode == LeagueSharp.Common.Orbwalking.OrbwalkingMode.LaneClear) || (Orbwalker.ActiveMode == LeagueSharp.Common.Orbwalking.OrbwalkingMode.Mixed) || (Orbwalker.ActiveMode == LeagueSharp.Common.Orbwalking.OrbwalkingMode.LastHit); }
-			get { return (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear) || (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed) || (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LastHit); }
-		}
+            get { return (Orbwalker.ActiveMode == SebbyLib.Orbwalking.OrbwalkingMode.LaneClear) || (Orbwalker.ActiveMode == SebbyLib.Orbwalking.OrbwalkingMode.Mixed) || (Orbwalker.ActiveMode == SebbyLib.Orbwalking.OrbwalkingMode.LastHit); }
+        }
 
         public void farmQ()
         {
@@ -433,6 +429,11 @@ namespace OneKeyToWin_AIO_Sebby
                     var mob = mobs[0];
                     Q.Cast(mob.Position);
                 }
+            }
+
+            if (!SebbyLib.Orbwalking.CanMove(50) || (Orbwalker.ShouldWait() && SebbyLib.Orbwalking.CanAttack()))
+            {
+                return;
             }
 
             var minions = Cache.GetMinions(Player.ServerPosition, Q.Range);
@@ -450,7 +451,7 @@ namespace OneKeyToWin_AIO_Sebby
                 }
             }
 
-            if (Config.Item("farmQ", true).GetValue<bool>() && Program.LaneClear && !LeagueSharp.Common.Orbwalking.CanAttack() && Player.ManaPercent > Config.Item("Mana", true).GetValue<Slider>().Value)
+            if (Config.Item("farmQ", true).GetValue<bool>() && Program.LaneClear && !SebbyLib.Orbwalking.CanAttack() && Player.ManaPercent > Config.Item("Mana", true).GetValue<Slider>().Value)
             {
                 var LCP = Config.Item("LCP", true).GetValue<bool>();
                 var PT = Game.Time - GetPassiveTime() > -1.5 || !E.IsReady();
@@ -487,7 +488,7 @@ namespace OneKeyToWin_AIO_Sebby
             {
                 if (mob.Health == mob.MaxHealth)
                     continue;
-                if (((mob.SkinName == "SRU_Dragon" && Config.Item("Rdragon", true).GetValue<bool>())
+                if (((mob.SkinName.ToLower().Contains("dragon") && Config.Item("Rdragon", true).GetValue<bool>())
                     || (mob.SkinName == "SRU_Baron" && Config.Item("Rbaron", true).GetValue<bool>())
                     || (mob.SkinName == "SRU_Red" && Config.Item("Rred", true).GetValue<bool>())
                     || (mob.SkinName == "SRU_Blue" && Config.Item("Rblue", true).GetValue<bool>()))

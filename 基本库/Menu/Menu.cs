@@ -133,22 +133,6 @@
             CommonMenu.Instance.AddSubMenu(Root);
         }
 
-	    public string ChackMenu(bool isRootMenu, string DisplayName)
-	    {
-			
-		    if (isRootMenu)
-		    {
-			    DisplayName = "【FrozenGJ】" + MultiLanguage._(DisplayName);
-			}
-			else
-		    {
-				DisplayName = MultiLanguage._(DisplayName);
-			}
-			DisplayName = DisplayName.Replace("娛樂漢化：", "")
-				.Replace("[Chaos|VIP系列]：", "");
-			return DisplayName;
-	    }
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="Menu" /> class.
         /// </summary>
@@ -163,8 +147,7 @@
         /// </param>
         public Menu(string displayName, string name, bool isRootMenu = false)
         {
-			
-			this.DisplayName = MenuGlobals.Function001(displayName);
+            this.DisplayName = MenuGlobals.Function001(displayName);
 			//修改的内容
 			this.DisplayName = ChackMenu(isRootMenu, displayName);
 			this.Name = name;
@@ -289,7 +272,7 @@
         {
             get
             {
-                return MenuDrawHelper.Font.MeasureText(MultiLanguage._(this.DisplayName)).Width + 25;
+                return MenuDrawHelper.Font.MeasureText(ChackMenu(this.IsRootMenu,this.DisplayName)).Width + 25;
             }
         }
 
@@ -553,10 +536,9 @@
         public Menu SetFontStyle(FontStyle fontStyle = FontStyle.Regular, Color? fontColor = null)
         {
             this.Style = fontStyle;
-			//修改根菜单字体默认颜色
-			this.Color = fontColor ?? Color.Goldenrod;
+            this.Color = fontColor ?? Color.White;
 
-			return this;
+            return this;
         }
 
         /// <summary>
@@ -608,7 +590,6 @@
             var items = this.Items.ToArray();
 
             Drawing.Direct3DDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
-	       
             MenuDrawHelper.DrawBox(
                 this.Position,
                 this.Width,
@@ -627,7 +608,7 @@
 
             font.DrawText(
                 null,
-				this.DisplayName,
+                MultiLanguage._(this.DisplayName),
                 new Rectangle((int)this.Position.X + 5, (int)this.Position.Y, this.Width, this.Height),
                 FontDrawFlags.VerticalCenter,
                 this.Color);
@@ -638,7 +619,7 @@
                 FontDrawFlags.Right | FontDrawFlags.VerticalCenter,
                 this.Color);
 
-            var textWidth = font.MeasureText(null, this.DisplayName);
+            var textWidth = font.MeasureText(null, MultiLanguage._(this.DisplayName));
             if ((this.Style & FontStyle.Strikeout) != 0)
             {
                 Drawing.DrawLine(
@@ -871,6 +852,21 @@
             }
         }
 
-        #endregion
-    }
+		#endregion
+
+		public string ChackMenu(bool isRootMenu, string DisplayName) {
+
+			if (isRootMenu)
+			{
+				DisplayName = "【FrozenGJ】" + MultiLanguage._(DisplayName);
+			}
+			else
+			{
+				DisplayName = MultiLanguage._(DisplayName);
+			}
+			DisplayName = DisplayName.Replace("娛樂漢化：", "")
+				.Replace("[Chaos|VIP系列]：", "");
+			return DisplayName;
+		}
+	}
 }

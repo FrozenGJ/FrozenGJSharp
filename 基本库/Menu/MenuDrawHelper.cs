@@ -209,7 +209,7 @@
                 on ? Color.FromArgb(1, 169, 234) : Color.FromArgb(37, 37, 37),
                 1,
                 Color.Black);
-            var s = on ? "开" : "关";
+            var s = on ? "ON" : "OFF";
             Font.DrawText(
                 null,
                 s,
@@ -354,8 +354,7 @@
                 1,
                 Color.Black);
 
-			//修改的内容：Tooltip的内容也经过翻译
-	        var s = MultiLanguage._(item.Tooltip);
+            var s = item.Tooltip;
             Font.DrawText(
                 null,
                 s,

@@ -28,7 +28,7 @@
         {
 			//修改的内容：增加FrozenGJ菜单。
 			FrozenGJMenu.Initialize();
-            TargetSelector.Initialize();
+			TargetSelector.Initialize();
             Prediction.Initialize();
             Hacks.Initialize();
             FakeClicks.Initialize();

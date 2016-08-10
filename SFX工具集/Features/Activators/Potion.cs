@@ -86,11 +86,11 @@ namespace SFXUtility.Features.Activators
                 Menu = new Menu(Name, Name);
                 var healthMenu = new Menu("Health", Name + "Health");
                 healthMenu.AddItem(new MenuItem(healthMenu.Name + "Percent", "Health Percent").SetValue(new Slider(60)));
-                healthMenu.AddItem(new MenuItem(healthMenu.Name + "Enabled", "Enabled").SetValue(false));
+                healthMenu.AddItem(new MenuItem(healthMenu.Name + "Enabled", "Enabled").SetValue(true));
 
                 var manaMenu = new Menu("Mana", Name + "Mana");
                 manaMenu.AddItem(new MenuItem(manaMenu.Name + "Percent", "Mana Percent").SetValue(new Slider(60)));
-                manaMenu.AddItem(new MenuItem(manaMenu.Name + "Enabled", "Enabled").SetValue(false));
+                manaMenu.AddItem(new MenuItem(manaMenu.Name + "Enabled", "Enabled").SetValue(true));
 
                 Menu.AddSubMenu(healthMenu);
                 Menu.AddSubMenu(manaMenu);
@@ -98,7 +98,7 @@ namespace SFXUtility.Features.Activators
                 Menu.AddItem(
                     new MenuItem(Name + "MaxEnemyDistance", "Max Enemy Distance").SetValue(new Slider(1000, 0, 1500)));
 
-                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(true));
 
                 Parent.Menu.AddSubMenu(Menu);
             }

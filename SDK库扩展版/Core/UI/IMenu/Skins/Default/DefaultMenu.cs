@@ -95,32 +95,10 @@ namespace LeagueSharp.SDK.UI.Skins.Default
         {
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="isRootMenu"></param>
-		/// <param name="displayName"></param>
-		/// <returns></returns>
-		public string ChackMenu(bool isRootMenu, string displayName) {
-			
-			if (isRootMenu)
-			{
-				displayName = "【FrozenGJ】" + MultiLanguage.Translation(displayName);
-			}
-			else
-			{
-				displayName =  MultiLanguage.Translation(displayName);
-			}
-
-			displayName = displayName.Replace("娛樂漢化：", "")
-				.Replace("[Chaos|VIP系列]：", "");
-			return displayName;
-		}
-
-		/// <summary>
-		///     Draws an Menu
-		/// </summary>
-		public override void Draw()
+        /// <summary>
+        ///     Draws an Menu
+        /// </summary>
+        public override void Draw()
         {
             var position = this.Component.Position;
             if (this.hovering && !this.Component.Toggled && this.Component.Components.Count > 0)
@@ -151,8 +129,8 @@ namespace LeagueSharp.SDK.UI.Skins.Default
 
             MenuSettings.Font.DrawText(
                 MenuManager.Instance.Sprite,
-				//MultiLanguage.Translation(this.Component.DisplayName),
-				ChackMenu(this.Component.Root, this.Component.DisplayName),
+				//修改的内容MultiLanguage.Translation(this.Component.DisplayName),
+				this.ChackMenu(this.Component.Root, this.Component.DisplayName),
 				(int)(position.X + MenuSettings.ContainerTextOffset),
                 centerY,
                 MenuSettings.TextColor);
@@ -363,13 +341,31 @@ namespace LeagueSharp.SDK.UI.Skins.Default
         /// </returns>
         public override int Width()
         {
-            //return (int)(DefaultUtilities.MeasureString(MultiLanguage.Translation(this.Component.DisplayName) + " »").Width
-            //     + (MenuSettings.ContainerTextOffset * 2) + MenuSettings.ContainerTextMarkWidth);
-
+			//return
+			//    (int)
+			//    (DefaultUtilities.MeasureString(MultiLanguage.Translation(this.Component.DisplayName) + " »").Width
+			//     + (MenuSettings.ContainerTextOffset * 2) + MenuSettings.ContainerTextMarkWidth);
+			//修改的内容
 			return (int)(DefaultUtilities.MeasureString(ChackMenu(this.Component.Root, this.Component.DisplayName) + " »").Width
 				 + (MenuSettings.ContainerTextOffset * 2) + MenuSettings.ContainerTextMarkWidth);
 		}
 
-        #endregion
-    }
+		//修改的内容
+		public string ChackMenu(bool isRootMenu, string displayName) {
+
+			if (isRootMenu)
+			{
+				displayName = "【FrozenGJ】" + MultiLanguage.Translation(displayName);
+			}
+			else
+			{
+				displayName = MultiLanguage.Translation(displayName);
+			}
+
+			displayName = displayName.Replace("娛樂漢化：", "")
+				.Replace("[Chaos|VIP系列]：", "");
+			return displayName;
+		}
+		#endregion
+	}
 }

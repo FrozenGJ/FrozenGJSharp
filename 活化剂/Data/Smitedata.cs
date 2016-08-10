@@ -4,7 +4,7 @@
 // without the prior written consent of the copyright owner.
 // 
 // Document:	Data/Smitedata.cs
-// Date:		22/09/2015
+// Date:		28/07/2016
 // Author:		Robin Kurisu
 #endregion
 

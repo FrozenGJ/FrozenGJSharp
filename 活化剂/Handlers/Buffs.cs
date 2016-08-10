@@ -23,13 +23,33 @@ namespace Activator.Handlers
         public static void StartOnUpdate()
         {
             Game.OnUpdate += Game_OnUpdate;
+            Obj_AI_Base.OnBuffAdd += Obj_AI_Base_OnBuffAdd;
         }
 
-       internal static void Game_OnUpdate(EventArgs args)
+        static void Obj_AI_Base_OnBuffAdd(Obj_AI_Base sender, Obj_AI_BaseBuffAddEventArgs args)
+        {
+            #region Buffs
+
+            foreach (var ally in Activator.Allies())
+            {
+                if (sender.IsValidTarget(1000) && !sender.IsZombie && sender.NetworkId == ally.Player.NetworkId)
+                {
+                    if (args.Buff.Name == "rengarralertsound")
+                    {
+                        ally.HitTypes.Add(HitType.Stealth);
+                        Utility.DelayAction.Add(200, () => ally.HitTypes.Remove(HitType.Stealth));
+                    }
+                }
+            }
+
+            #endregion
+        }
+
+       static void Game_OnUpdate(EventArgs args)
        {
             foreach (var hero in Activator.Allies())
             {
-                var aura = Buffdata.SomeAuras.Find(au => hero.Player.HasBuff(au.Name));
+                var aura = Auradata.CachedAuras.Find(au => hero.Player.HasBuff(au.Name));
                 if (aura == null)
                 {
                     if (hero.DotTicks > 0)
@@ -50,7 +70,7 @@ namespace Activator.Handlers
                         () =>
                         {
                             // double check after delay incase we no longer have the buff
-                            if (hero.Player.HasBuff(aura.Name))
+                            if (hero.Player.HasBuff(aura.Name) && hero.Player.IsValidTarget(float.MaxValue, false))
                             {
                                 hero.ForceQSS = true;
                                 Utility.DelayAction.Add(100, () => hero.ForceQSS = false);
@@ -64,19 +84,22 @@ namespace Activator.Handlers
                         () =>
                         {                           
                             // double check after delay incase we no longer have the buff
-                            if (hero.Player.HasBuff(aura.Name))
+                            if (hero.Player.HasBuff(aura.Name) && hero.Player.IsValidTarget(float.MaxValue, false))
                             {
-                                if (!hero.HitTypes.Contains(HitType.Ultimate))
+                                if (!hero.Player.IsZombie && !hero.Immunity)
                                 {
-                                    Utility.DelayAction.Add(500, () => hero.HitTypes.Remove(HitType.Ultimate));
-                                    hero.HitTypes.Add(HitType.Ultimate);
-                                }
+                                    if (!hero.HitTypes.Contains(HitType.Ultimate))
+                                    {
+                                        Utility.DelayAction.Add(500, () => hero.HitTypes.Remove(HitType.Ultimate));
+                                        hero.HitTypes.Add(HitType.Ultimate);
+                                    }
 
-                                if (Utils.GameTimeTickCount - aura.TickLimiter >= 100)
-                                {
-                                    hero.DotTicks += 1;
-                                    hero.IncomeDamage += 1;
-                                    aura.TickLimiter = Utils.GameTimeTickCount;
+                                    if (Utils.GameTimeTickCount - aura.TickLimiter >= 100)
+                                    {
+                                        hero.DotTicks += 1;
+                                        hero.IncomeDamage += 1; // todo: get actuall damage
+                                        aura.TickLimiter = Utils.GameTimeTickCount;
+                                    }
                                 }
                             }
                         });
@@ -104,189 +127,13 @@ namespace Activator.Handlers
             }
         }
 
-        #region Cleanse
-
-        internal static void CheckCleanse(Obj_AI_Hero player)
-        {
-            foreach (var hero in Activator.Heroes.Where(x => x.Player.NetworkId == player.NetworkId))
-            {
-                hero.CleanseBuffCount = GetAuras(hero.Player, "summonerboost").Count();
-
-                if (hero.CleanseBuffCount > 0)
-                {
-                    foreach (var buff in GetAuras(hero.Player, "summonerboost"))
-                    {
-                        var duration = (int) (buff.EndTime - buff.StartTime);
-                        if (duration > hero.CleanseHighestBuffTime)
-                        {
-                            hero.CleanseHighestBuffTime = duration * 1000;
-                        }
-                    }
-
-                    hero.LastDebuffTimestamp = Utils.GameTimeTickCount;
-                }
-
-                else
-                {
-                    if (hero.CleanseHighestBuffTime > 0)
-                        hero.CleanseHighestBuffTime -= hero.QSSHighestBuffTime;
-                    else
-                        hero.CleanseHighestBuffTime = 0;
-                }
-            }
-        }
-
-        #endregion
-
-        #region Dervish
-        internal static void CheckDervish(Obj_AI_Hero player)
-        {
-            foreach (var hero in Activator.Heroes.Where(x => x.Player.NetworkId == player.NetworkId))
-            {
-                hero.DervishBuffCount = GetAuras(hero.Player, "Dervish").Count();
-
-                if (hero.DervishBuffCount > 0)
-                {
-                    foreach (var buff in GetAuras(hero.Player, "Dervish"))
-                    {
-                        var duration = (int) (buff.EndTime - buff.StartTime);
-                        if (duration > hero.DervishHighestBuffTime)
-                        {
-                            hero.DervishHighestBuffTime = duration * 1000;
-                        }
-                    }
-
-                    hero.LastDebuffTimestamp = Utils.GameTimeTickCount;
-                }
-
-                else
-                {
-                    if (hero.DervishHighestBuffTime > 0)
-                        hero.DervishHighestBuffTime -= hero.DervishHighestBuffTime;
-                    else
-                        hero.DervishHighestBuffTime = 0;
-                }
-            }
-        }
-
-        #endregion
-
-        #region QSS
-        internal static void CheckQSS(Obj_AI_Hero player)
-        {
-            foreach (var hero in Activator.Heroes.Where(x => x.Player.NetworkId == player.NetworkId))
-            {
-                hero.QSSBuffCount = GetAuras(hero.Player, "Quicksilver").Count();
-
-                if (hero.QSSBuffCount > 0)
-                {
-                    foreach (var buff in GetAuras(hero.Player, "Quicksilver"))
-                    {
-                        var duration = (int) (buff.EndTime - buff.StartTime);
-                        if (duration > hero.QSSHighestBuffTime)
-                        {
-                            hero.QSSHighestBuffTime = duration * 1000;
-                        }
-                    }
-
-                    hero.LastDebuffTimestamp = Utils.GameTimeTickCount;
-                }
-
-                else
-                {
-                    if (hero.QSSHighestBuffTime > 0)
-                        hero.QSSHighestBuffTime -= hero.QSSHighestBuffTime;
-                    else
-                        hero.QSSHighestBuffTime = 0;
-                }
-            }
-        }
-
-        #endregion
-
-        #region Mikaels
-        internal static void CheckMikaels(Obj_AI_Hero player)
-        {
-            foreach (var hero in Activator.Heroes.Where(x => x.Player.NetworkId == player.NetworkId))
-            {
-                hero.MikaelsBuffCount = GetAuras(hero.Player, "Mikaels").Count();
-
-                if (hero.MikaelsBuffCount > 0)
-                {
-                    foreach (var buff in GetAuras(hero.Player, "Mikaels"))
-                    {
-                        var duration = (int) (buff.EndTime - buff.StartTime);
-                        if (duration > hero.MikaelsHighestBuffTime)
-                        {
-                            hero.MikaelsHighestBuffTime = duration * 1000;
-                        }
-                    }
-
-                    hero.LastDebuffTimestamp = Utils.GameTimeTickCount;
-                }
-
-                else
-                {
-                    if (hero.MikaelsHighestBuffTime > 0)
-                        hero.MikaelsHighestBuffTime -= hero.MikaelsHighestBuffTime;
-                    else
-                        hero.MikaelsHighestBuffTime = 0;
-                }
-
-                foreach (var aura in Buffdata.BuffList.Where(au => hero.Player.HasBuff(au.Name)))
-                {
-                    if (aura.DoT && hero.Player.Health / hero.Player.MaxHealth * 100 <=
-                        Activator.Origin.Item("useMikaelsdot").GetValue<Slider>().Value)
-                    {
-                        hero.ForceQSS = true;
-                        Utility.DelayAction.Add(100, () => hero.ForceQSS = false);
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-        #region Mercurial
-        internal static void CheckMercurial(Obj_AI_Hero player)
-        {
-            foreach (var hero in Activator.Heroes.Where(x => x.Player.NetworkId == player.NetworkId))
-            {
-                hero.MercurialBuffCount = GetAuras(hero.Player, "Mercurial").Count();
-
-                if (hero.MercurialBuffCount > 0)
-                {
-                    foreach (var buff in GetAuras(hero.Player, "Mercurial"))
-                    {
-                        var duration = (int) (buff.EndTime - buff.StartTime);
-                        if (duration > hero.MercurialHighestBuffTime)
-                        {
-                            hero.MercurialHighestBuffTime = duration * 1000;
-                        }
-                    }
-
-                    hero.LastDebuffTimestamp = Utils.GameTimeTickCount;
-                }
-
-                else
-                {
-                    if (hero.MercurialHighestBuffTime > 0)
-                        hero.MercurialHighestBuffTime -= hero.MercurialHighestBuffTime;
-                    else
-                        hero.MercurialHighestBuffTime = 0;
-                }
-            }
-        }
-
-        #endregion
-
         internal static IEnumerable<BuffInstance> GetAuras(Obj_AI_Hero player, string itemname)
         {
             if (player.HasBuffOfType(BuffType.Knockback) || player.HasBuffOfType(BuffType.Knockup))
                 return Enumerable.Empty<BuffInstance>();
 
             return player.Buffs.Where(buff => 
-                !Buffdata.BuffList.Any(b => buff.Name.ToLower() == b.Name && b.QssIgnore) &&
+                !Auradata.BuffList.Any(b => buff.Name.ToLower() == b.Name && b.QssIgnore) &&
                    (buff.Type == BuffType.Snare &&
                     Activator.Origin.Item(itemname + "csnare").GetValue<bool>() ||
                     buff.Type == BuffType.Silence &&
@@ -313,7 +160,7 @@ namespace Activator.Handlers
                     Activator.Origin.Item(itemname + "cexh").GetValue<bool>());
         }
 
-        public static int GetCustomDamage(this Obj_AI_Hero source, string auraname, Obj_AI_Hero target)
+        internal static int GetCustomDamage(this Obj_AI_Hero source, string auraname, Obj_AI_Hero target)
         {
             if (auraname == "sheen")
             {

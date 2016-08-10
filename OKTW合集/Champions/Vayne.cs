@@ -5,59 +5,39 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using SebbyLib;
-using static LeagueSharp.Common.Spell;
 
 namespace OneKeyToWin_AIO_Sebby
 {
     class Vayne
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
-        private Spell E, Q, R, W, Flash;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        private Spell E, Q, R, W;
         private float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
         public static Core.OKTWdash Dash;
 
         public void LoadOKTW()
         {
-	        var FlashSlot = Player.GetSpellSlot("SummonerFlash");
-	        if (FlashSlot != SpellSlot.Unknown)
-	        {
-		        Flash = new Spell(FlashSlot,425);
-	        }
-
-	        Q = new Spell(SpellSlot.Q, 300);
+            Q = new Spell(SpellSlot.Q, 300);
             E = new Spell(SpellSlot.E, 670);
             W = new Spell(SpellSlot.E, 670);
             R = new Spell(SpellSlot.R, 3000);
-			
-			E.SetTargetted(0.25f, 2200f);
+
+            E.SetTargetted(0.25f, 2200f);
 
             LoadMenuOKTW();
 
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
-            LeagueSharp.Common.Orbwalking.BeforeAttack += BeforeAttack;
-            LeagueSharp.Common.Orbwalking.AfterAttack += afterAttack;
+            SebbyLib.Orbwalking.BeforeAttack += BeforeAttack;
+            SebbyLib.Orbwalking.AfterAttack += afterAttack;
             Interrupter2.OnInterruptableTarget +=Interrupter2_OnInterruptableTarget;
-			Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast; ;
+            //Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
         }
 
-		private void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
-			if (Config.Item("Eleesin").GetValue<bool>()
-				&& sender.IsEnemy && sender.IsChampion()
-				&& ((Obj_AI_Hero)sender).ChampionName.ToLower() == "leesin"
-				&& args.Slot == SpellSlot.R
-				&& args.Target.IsMe
-				&& sender.IsValidTarget(E.Range)
-				&& E.IsReady())
-			{
-				E.Cast(sender);
-			}
-		}
-
-		private void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
+        private void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
         {
             if (E.IsReady() && sender.IsValidTarget(E.Range))
                 E.Cast(sender);
@@ -82,18 +62,8 @@ namespace OneKeyToWin_AIO_Sebby
 
             Config.SubMenu(Player.ChampionName).SubMenu("E Config").AddItem(new MenuItem("useE", "OneKeyToCast E closest person", true).SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press))); //32 == space
             Config.SubMenu(Player.ChampionName).SubMenu("E Config").AddItem(new MenuItem("Eks", "E KS", true).SetValue(true));
-	        Config.SubMenu(Player.ChampionName)
-		        .SubMenu("E Config")
-		        .AddItem(new MenuItem("Eleesin", "E断盲僧RQ").SetValue(true));
-	        Config.SubMenu(Player.ChampionName)
-		        .SubMenu("E Config")
-		        .AddItem(new MenuItem("EFlash", "solo低血量E闪").SetValue(true));
 
-			Config.SubMenu(Player.ChampionName)
-				.SubMenu("E Config")
-				.AddItem(new MenuItem("EFlashTest", "E闪测试").SetValue(new KeyBind('G',KeyBindType.Press)));
-
-			Config.SubMenu(Player.ChampionName).SubMenu("R Config").AddItem(new MenuItem("autoR", "Auto R", true).SetValue(true));
+            Config.SubMenu(Player.ChampionName).SubMenu("R Config").AddItem(new MenuItem("autoR", "Auto R", true).SetValue(true));
             Config.SubMenu(Player.ChampionName).SubMenu("R Config").AddItem(new MenuItem("visibleR", "Unvisable block AA ", true).SetValue(true));
             Config.SubMenu(Player.ChampionName).SubMenu("R Config").AddItem(new MenuItem("autoQR", "Auto Q when R active ", true).SetValue(true));
 
@@ -110,7 +80,7 @@ namespace OneKeyToWin_AIO_Sebby
                 E.Cast(target);
         }
 
-        private void BeforeAttack(LeagueSharp.Common.Orbwalking.BeforeAttackEventArgs args)
+        private void BeforeAttack(SebbyLib.Orbwalking.BeforeAttackEventArgs args)
         {
             if (Config.Item("visibleR", true).GetValue<bool>() && Player.HasBuff("vaynetumblefade") && Player.CountEnemiesInRange(800) > 1)
                 args.Process = false;
@@ -124,7 +94,7 @@ namespace OneKeyToWin_AIO_Sebby
             {
                 foreach (var target in HeroManager.Enemies.Where(target => target.IsValidTarget(800) && GetWStacks(target) == 2))
                 {
-                    if (LeagueSharp.Common.Orbwalking.InAutoAttackRange(target) && args.Target.Health > 3 * Player.GetAutoAttackDamage(target))
+                    if (SebbyLib.Orbwalking.InAutoAttackRange(target) && args.Target.Health > 3 * Player.GetAutoAttackDamage(target))
                     {
                         args.Process = false;
                         Orbwalker.ForceTarget(target);
@@ -151,7 +121,7 @@ namespace OneKeyToWin_AIO_Sebby
 
                     if (dmgE > t.Health)
                     {
-                        //E.Cast(t);
+                        E.Cast(t);
                     }
                 }
 
@@ -196,74 +166,9 @@ namespace OneKeyToWin_AIO_Sebby
             return target.MaxHealth * (4.5 + W.Level * 1.5) * 0.01;
         }
 
-		public static bool HasSpellShield(Obj_AI_Hero target) {
-			return target.HasBuffOfType(BuffType.SpellShield) || target.HasBuffOfType(BuffType.SpellImmunity);
-		}
-
-		private void CondemnFlash(Obj_AI_Hero target)
-	    {
-		    if (!OktwCommon.CanMove(Player)|| !E.IsReady() || Flash == null || !Flash.IsReady() || target.IsDead || target.IsZombie || !target.IsValidTarget(E.Range) || HasSpellShield(target) || target.IsDashing()) return;
-		    if (target.CountEnemiesInRange(1000)==0 
-				&& Player.CountAlliesInRange(700)==0
-				&& Player.HealthPercent<50
-				&& Player.HealthPercent < target.HealthPercent)
-		    {
-			    //OktwCommon.debug("进入E闪逻辑");
-
-				var circlePoint = CirclePoint(5, Flash.Range, Player.ServerPosition);
-			    var flashPoint = circlePoint.FirstOrDefault(p => Dash.IsGoodPosition(p) && CondemnCheck(p,target));
-			    if (!flashPoint.IsZero)
-			    {
-				    if (Q.IsReady() && Player.Distance(flashPoint)<Q.Range)
-				    {
-					    return;
-				    }
-
-				    if(E.Cast(target) == CastStates.SuccessfullyCasted){
-						Utility.DelayAction.Add(100, () =>
-						{
-							Flash.Cast(flashPoint);
-						});
-					}
-			    }
-		    }
-	    }
-
-
-		private void Game_OnGameUpdate(EventArgs args)
+        private void Game_OnGameUpdate(EventArgs args)
         {
-			if (Config.Item("EFlashTest").GetValue<KeyBind>().Active)
-			{
-				var target = TargetSelector.GetTarget(LeagueSharp.Common.Orbwalking.GetRealAutoAttackRange(Player), TargetSelector.DamageType.Physical);
-				if (target != null)
-				{
-					if (!OktwCommon.CanMove(Player) || Flash == null || !E.IsReady() || !Flash.IsReady() || target.IsDead || target.IsZombie || !target.IsValidTarget(E.Range) || HasSpellShield(target) || target.IsDashing()) return;
-					//OktwCommon.debug("进入E闪逻辑");
-
-					var circlePoint = CirclePoint(5, Flash.Range, Player.ServerPosition);
-					var flashPoint = circlePoint.FirstOrDefault(p => Dash.IsGoodPosition(p) && CondemnCheck(p, target));
-					if (!flashPoint.IsZero)
-					{
-						if(E.Cast(target) == Spell.CastStates.SuccessfullyCasted){
-							Utility.DelayAction.Add(100, () =>
-							{
-								Flash.Cast(flashPoint);
-							});
-						}
-					}
-				}
-			}
-
-			if (Program.Combo && Config.Item("EFlash").GetValue<bool>())
-			{
-				var target = TargetSelector.GetTarget(LeagueSharp.Common.Orbwalking.GetRealAutoAttackRange(Player), TargetSelector.DamageType.Physical);
-				if (target != null)
-				{
-					CondemnFlash(target);
-				}
-			}
-
-			var dashPosition = Player.Position.Extend(Game.CursorPos, Q.Range);
+            var dashPosition = Player.Position.Extend(Game.CursorPos, Q.Range);
 
             if (E.IsReady())
             {
@@ -294,7 +199,7 @@ namespace OneKeyToWin_AIO_Sebby
                 {
                     var t = TargetSelector.GetTarget(900, TargetSelector.DamageType.Physical);
 
-                    if (t.IsValidTarget() && !LeagueSharp.Common.Orbwalking.InAutoAttackRange(t) && t.Position.Distance(Game.CursorPos) < t.Position.Distance(Player.Position) &&  !t.IsFacing(Player))
+                    if (t.IsValidTarget() && !SebbyLib.Orbwalking.InAutoAttackRange(t) && t.Position.Distance(Game.CursorPos) < t.Position.Distance(Player.Position) &&  !t.IsFacing(Player))
                     {
                         var dashPos = Dash.CastDash();
                         if (!dashPos.IsZero)
@@ -303,8 +208,6 @@ namespace OneKeyToWin_AIO_Sebby
                         }
                     }
                 }
-
-	            
             }
 
             if (Program.LagFree(2))
@@ -324,7 +227,7 @@ namespace OneKeyToWin_AIO_Sebby
                         }
                         else if (E.IsReady() && Player.Health < Player.MaxHealth * 0.4)
                         {
-                            //E.Cast(target);
+                            E.Cast(target);
                             Program.debug("push");
                         }
                     }

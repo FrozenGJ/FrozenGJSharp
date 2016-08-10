@@ -439,7 +439,7 @@
         /// </returns>
         public MenuItem SetTooltip(string tooltip, Color? tooltipColor = null)
         {
-            this.Tooltip = tooltip;
+            this.Tooltip = MultiLanguage._(tooltip);
             this.TooltipColor = tooltipColor ?? Color.White;
 
             return this;

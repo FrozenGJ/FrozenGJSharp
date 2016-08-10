@@ -61,7 +61,23 @@ namespace LeagueSharp.Common.Properties {
         }
         
         /// <summary>
-        ///   查找类似 4iGf8tpwZeTaSfuNl85BRZp05BG3wvSXcEmgxfuwh2FWhxIle3fEGBa2QRH8bEb8ctxT8j2bJnJxaJOLWWqrMatGNQl19M30XEHDCxJRq8EVF7ZCwFJ8vCV0TYqGDbfTyFYexjZbr6+MkQRwXInIRpa9G1+oxPlBPj5T8q35PMAoY7LwBv4uMR8kKli/5fYxj/kqbGgIxFWmwsYeRNm7zuMoCzXYrdQ07mcnAfoC7Kecne7sIBJB/dRoi+dwraKsPh6A7mtiyMNPSNdtkbJCgiCaRRtjSbqgC/WOMnJEWfrRNCIvro15Zfk++hbgG+cpxl8nyQAcQrCwG4j/eo/Bg2qVSEgWx2cpJKr/j79r9/ZR9NL0QfygXz3FSP1M2CzdpxMj6gR+2lv3X19Qb2OhjxaBRGm2GHBW97cwrEdlkfKRZjqRSxahKja/sYciu2yIZcMmFGxbcZuJvGXaqJetiv3YmGF/q2jK8EcUv5shJO0m+e2nzlvq2yBSIWoSXSbT [字符串的其余部分被截断]&quot;; 的本地化字符串。
+        ///   查找类似 {
+        ///	&quot;\u003c&quot;: &quot;\u003c&quot;,
+        ///	&quot;yasuo&quot;: &quot;\u72bd\u5bbf&quot;,
+        ///    &quot;velkoz&quot;: &quot;\u5a01\u5bc7\u8332&quot;,
+        ///    &quot;braum&quot;: &quot;\u5e03\u90ce\u59c6&quot;,
+        ///    &quot;gnar&quot;: &quot;\u5436\u5152&quot;,
+        ///    &quot;azir&quot;: &quot;\u963f\u7948\u723e&quot;,
+        ///    &quot;kalista&quot;: &quot;\u514b\u9ece\u601d\u59b2&quot;,
+        ///    &quot;rekSai&quot;: &quot;\u96f7\u73c2\u715e&quot;,
+        ///    &quot;bard&quot;: &quot;\u5df4\u5fb7&quot;,
+        ///    &quot;ekko&quot;: &quot;\u827e\u514b&quot;,
+        ///    &quot;aatrox&quot;: &quot;\u5384\u85a9\u65af&quot;,
+        ///    &quot;ahri&quot;: &quot;\u963f\u7483&quot;,
+        ///    &quot;akali&quot;: &quot;\u963f\u5361\u8389&quot;,
+        ///    &quot;alistar&quot;: &quot;\u4e9e\u6b77\u65af\u5854&quot;,
+        ///    &quot;amumu&quot;: &quot;\u963f\u59c6\u59c6&quot;,
+        ///    &quot;anivia&quot;: &quot;\u8 [字符串的其余部分被截断]&quot;; 的本地化字符串。
         /// </summary>
         internal static string ChineseJson {
             get {

@@ -1,67 +1,103 @@
-﻿using System;
-
-namespace LeagueSharp.Common
+﻿namespace LeagueSharp.Common
 {
     /// <summary>
-    /// Adds hacks to the menu.
+    ///     Adds hacks to the menu.
     /// </summary>
     internal class Hacks
     {
+        #region Constants
+
+        private const int WM_KEYDOWN = 0x100;
+
+        private const int WM_KEYUP = 0x101;
+
+        #endregion
+
+        #region Static Fields
+
         private static Menu menu;
 
-        /// <summary>
-        /// Initializes this instance.
-        /// </summary>
-        internal static void Initialize()
-        {
-            CustomEvents.Game.OnGameLoad += eventArgs =>
-            {
-                menu = new Menu("Hacks", "Hacks");
+        private static MenuItem MenuAntiAfk;
 
-                var draw = menu.AddItem(new MenuItem("DrawingHack", "Disable Drawing").SetValue(false));
-                draw.SetValue(LeagueSharp.Hacks.DisableDrawings);
-                draw.ValueChanged +=
-                    delegate(object sender, OnValueChangeEventArgs args)
-                    {
-                        LeagueSharp.Hacks.DisableDrawings = args.GetNewValue<bool>();
-                    };
+        private static MenuItem MenuDisableDrawings;
 
-                var say = menu.AddItem(new MenuItem("SayHack", "Disable L# Send Chat").SetValue(false)
-                    .SetTooltip("Block Game.Say from Assemblies"));
-                say.SetValue(LeagueSharp.Hacks.DisableSay);
-                say.ValueChanged +=
-                    delegate(object sender, OnValueChangeEventArgs args)
-                    {
-                        LeagueSharp.Hacks.DisableSay = args.GetNewValue<bool>();
-                    };
+        private static MenuItem MenuDisableSay;
 
-                /*  var zoom = menu.AddItem(new MenuItem("ZoomHack", "Extended Zoom").SetValue(false));
-                zoom.SetValue(LeagueSharp.Hacks.ZoomHack);
-                zoom.ValueChanged +=
-                    delegate (object sender, OnValueChangeEventArgs args)
-                    {
-                        LeagueSharp.Hacks.ZoomHack = args.GetNewValue<bool>();
-                    };
+        private static MenuItem MenuTowerRange;
 
-                menu.AddItem(
-                    new MenuItem("ZoomHackInfo", "Note: ZoomHack may be unsafe!", false, FontStyle.Regular, Color.Red));
-                */
+        #endregion
 
-                var tower = menu.AddItem(new MenuItem("TowerHack", "Show Tower Ranges").SetValue(false));
-                tower.SetValue(LeagueSharp.Hacks.TowerRanges);
-                tower.ValueChanged +=
-                    delegate(object sender, OnValueChangeEventArgs args)
-                    {
-                        LeagueSharp.Hacks.TowerRanges = args.GetNewValue<bool>();
-                    };
-
-                CommonMenu.Instance.AddSubMenu(menu);
-            };
-        }
+        #region Public Methods and Operators
 
         public static void Shutdown()
         {
             Menu.Remove(menu);
         }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        ///     Initializes this instance.
+        /// </summary>
+        internal static void Initialize()
+        {
+            CustomEvents.Game.OnGameLoad += eventArgs =>
+                {
+                    menu = new Menu("Hacks", "Hacks");
+
+                    MenuAntiAfk = menu.AddItem(new MenuItem("AfkHack", "Anti-AFK").SetValue(false));
+                    MenuAntiAfk.ValueChanged += (sender, args) => LeagueSharp.Hacks.AntiAFK = args.GetNewValue<bool>();
+
+                    MenuDisableDrawings = menu.AddItem(new MenuItem("DrawingHack", "Disable Drawing").SetValue(false));
+                    MenuDisableDrawings.ValueChanged +=
+                        (sender, args) => LeagueSharp.Hacks.DisableDrawings = args.GetNewValue<bool>();
+                    MenuDisableDrawings.SetValue(LeagueSharp.Hacks.DisableDrawings);
+
+                    MenuDisableSay =
+                        menu.AddItem(
+                            new MenuItem("SayHack", "Disable L# Send Chat").SetValue(false)
+                                .SetTooltip("Block Game.Say from Assemblies"));
+                    MenuDisableSay.ValueChanged +=
+                        (sender, args) => LeagueSharp.Hacks.DisableSay = args.GetNewValue<bool>();
+
+                    MenuTowerRange = menu.AddItem(new MenuItem("TowerHack", "Show Tower Ranges").SetValue(false));
+                    MenuTowerRange.ValueChanged +=
+                        (sender, args) => LeagueSharp.Hacks.TowerRanges = args.GetNewValue<bool>();
+
+                    LeagueSharp.Hacks.AntiAFK = MenuAntiAfk.GetValue<bool>();
+                    LeagueSharp.Hacks.DisableDrawings = MenuDisableDrawings.GetValue<bool>();
+                    LeagueSharp.Hacks.DisableSay = MenuDisableSay.GetValue<bool>();
+                    LeagueSharp.Hacks.TowerRanges = MenuTowerRange.GetValue<bool>();
+
+                    CommonMenu.Instance.AddSubMenu(menu);
+
+                    Game.OnWndProc += args =>
+                        {
+                            if (!MenuDisableDrawings.GetValue<bool>())
+                            {
+                                return;
+                            }
+
+                            if ((int)args.WParam != Config.ShowMenuPressKey)
+                            {
+                                return;
+                            }
+
+                            if (args.Msg == WM_KEYDOWN)
+                            {
+                                LeagueSharp.Hacks.DisableDrawings = false;
+                            }
+
+                            if (args.Msg == WM_KEYUP)
+                            {
+                                LeagueSharp.Hacks.DisableDrawings = true;
+                            }
+                        };
+                };
+        }
+
+        #endregion
     }
 }

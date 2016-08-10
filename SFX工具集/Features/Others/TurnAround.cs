@@ -137,7 +137,7 @@ namespace SFXUtility.Features.Others
             try
             {
                 Menu = new Menu(Name, Name);
-                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(true));
 
                 Parent.Menu.AddSubMenu(Menu);
             }

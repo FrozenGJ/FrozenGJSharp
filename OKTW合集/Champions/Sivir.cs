@@ -10,7 +10,7 @@ namespace OneKeyToWin_AIO_Sebby
     class Sivir
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         public Spell E, Q, Qc, W, R;
         public float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
 
@@ -72,7 +72,7 @@ namespace OneKeyToWin_AIO_Sebby
 
             Game.OnUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-            LeagueSharp.Common.Orbwalking.AfterAttack += Orbwalker_AfterAttack;
+            SebbyLib.Orbwalking.AfterAttack += Orbwalker_AfterAttack;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
         }
@@ -171,7 +171,7 @@ namespace OneKeyToWin_AIO_Sebby
             {
                 missileManager.Target = t;
                 var qDmg = OktwCommon.GetKsDamage(t,Q) * 1.9;
-                if (LeagueSharp.Common.Orbwalking.InAutoAttackRange(t))
+                if (SebbyLib.Orbwalking.InAutoAttackRange(t))
                     qDmg = qDmg + Player.GetAutoAttackDamage(t) * 3;
                 if (qDmg > t.Health)
                     Q.Cast(t, true);

@@ -268,9 +268,9 @@ namespace SFXUtility.Features.Timers
                 drawingMenu.AddItem(
                     new MenuItem(drawingMenu.Name + "OffsetLeft", "Offset Left").SetValue(new Slider(0)));
                 drawingMenu.AddItem(new MenuItem(drawingMenu.Name + "Outline", "Outline").SetValue(true));
-                drawingMenu.AddItem(new MenuItem(drawingMenu.Name + "Self", "Self").SetValue(false));
-                drawingMenu.AddItem(new MenuItem(drawingMenu.Name + "Enemy", "Enemy").SetValue(false));
-                drawingMenu.AddItem(new MenuItem(drawingMenu.Name + "Ally", "Ally").SetValue(false));
+                drawingMenu.AddItem(new MenuItem(drawingMenu.Name + "Self", "Self").SetValue(true));
+                drawingMenu.AddItem(new MenuItem(drawingMenu.Name + "Enemy", "Enemy").SetValue(true));
+                drawingMenu.AddItem(new MenuItem(drawingMenu.Name + "Ally", "Ally").SetValue(true));
 
                 Menu.AddSubMenu(drawingMenu);
 
@@ -316,7 +316,7 @@ namespace SFXUtility.Features.Timers
                     }
                 }
 
-                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(true));
 
                 Parent.Menu.AddSubMenu(Menu);
 

@@ -11,8 +11,9 @@ namespace OneKeyToWin_AIO_Sebby
     class Ashe
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
-        private bool CastR = false;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        private bool CastR = false, CastR2 = false;
+        private Obj_AI_Base RTarget = null;
         public Spell Q, W, E, R;
         public float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         public Obj_AI_Hero Player { get { return ObjectManager.Player; }}
@@ -21,8 +22,8 @@ namespace OneKeyToWin_AIO_Sebby
         {
             Config.SubMenu(Player.ChampionName).SubMenu("Draw").AddItem(new MenuItem("onlyRdy", "Draw only ready spells", true).SetValue(true));
             Config.SubMenu(Player.ChampionName).SubMenu("Draw").AddItem(new MenuItem("wRange", "W range", true).SetValue(false));
-
-
+            Config.SubMenu(Player.ChampionName).SubMenu("Draw").AddItem(new MenuItem("rNot", "R key info", true).SetValue(true));
+            
             Config.SubMenu(Player.ChampionName).SubMenu("Q Config").AddItem(new MenuItem("harasQ", "Harass Q", true).SetValue(true));
 
             Config.SubMenu(Player.ChampionName).SubMenu("E Config").AddItem(new MenuItem("autoE", "Auto E", true).SetValue(true));
@@ -32,29 +33,13 @@ namespace OneKeyToWin_AIO_Sebby
             Config.SubMenu(Player.ChampionName).SubMenu("R Config").AddItem(new MenuItem("autoRaoe", "Auto R aoe", true).SetValue(true));
             Config.SubMenu(Player.ChampionName).SubMenu("R Config").AddItem(new MenuItem("autoRinter", "Auto R OnPossibleToInterrupt", true).SetValue(true));
 
-            foreach (var enemy in HeroManager.Enemies)
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    var spell = enemy.Spellbook.Spells[i];
-                    if (spell.SData.TargettingType != SpellDataTargetType.Self && spell.SData.TargettingType != SpellDataTargetType.SelfAndUnit)
-                    {
-                        Config.SubMenu(Player.ChampionName).SubMenu("R Config").SubMenu("Spell Manager").SubMenu(enemy.ChampionName).AddItem(new MenuItem("spell" + spell.SData.Name, spell.Name, true).SetValue(false));
-                    }
-                }
-            }
-
+            Config.SubMenu(Player.ChampionName).SubMenu("R Config").AddItem(new MenuItem("useR2", "R key target cast", true).SetValue(new KeyBind("Y".ToCharArray()[0], KeyBindType.Press))); //32 == space
             Config.SubMenu(Player.ChampionName).SubMenu("R Config").AddItem(new MenuItem("useR", "Semi-manual cast R key", true).SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press))); //32 == space
-
+            
             List<string> modes = new List<string>();
 
             modes.Add("LOW HP");
             modes.Add("CLOSEST");
-
-            foreach (var enemy in HeroManager.Enemies)
-            {
-                modes.Add(enemy.ChampionName);
-            }
             
             Config.SubMenu(Player.ChampionName).SubMenu("R Config").AddItem(new MenuItem("Semi-manual", "Semi-manual MODE", true).SetValue(new StringList(modes.ToArray(), 0)));
 
@@ -77,7 +62,7 @@ namespace OneKeyToWin_AIO_Sebby
             Q = new Spell(SpellSlot.Q);
             W = new Spell(SpellSlot.W, 1240);
             E = new Spell(SpellSlot.E, 2500);
-            R = new Spell(SpellSlot.R, float.MaxValue);
+            R = new Spell(SpellSlot.R, 2500);
 
             W.SetSkillshot(0.25f, 20f , 1500f, true, SkillshotType.SkillshotLine);
             E.SetSkillshot(0.25f, 299f, 1400f, false, SkillshotType.SkillshotLine);
@@ -86,24 +71,23 @@ namespace OneKeyToWin_AIO_Sebby
 
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-            LeagueSharp.Common.Orbwalking.BeforeAttack += BeforeAttack;
+            SebbyLib.Orbwalking.AfterAttack += Orbwalking_AfterAttack; ;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Interrupter2.OnInterruptableTarget +=Interrupter2_OnInterruptableTarget;
-            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
+            Game.OnWndProc += Game_OnWndProc;
         }
 
-        private void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private void Orbwalking_AfterAttack(AttackableUnit unit, AttackableUnit target)
         {
+            LogicQ();
+        }
 
-            if (!R.IsReady() || sender.IsMinion || !sender.IsEnemy || args.SData.IsAutoAttack()
-                || !sender.IsValid<Obj_AI_Hero>() || !sender.IsValidTarget() || args.SData.Name.ToLower() == "tormentedsoil")
-                return;
-
-            if (Config.Item("spell" + args.SData.Name, true) != null && Config.Item("spell" + args.SData.Name, true).GetValue<bool>())
+        private void Game_OnWndProc(WndEventArgs args)
+        {
+            if(args.Msg == 513 && HeroManager.Enemies.Exists(x => Game.CursorPos.Distance(x.Position) < 300))
             {
-                R.Cast(sender);
-                Program.debug("R 2");
-            }
+                RTarget = HeroManager.Enemies.First(x => Game.CursorPos.Distance(x.Position) < 300);
+            } 
         }
 
         private void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
@@ -125,10 +109,6 @@ namespace OneKeyToWin_AIO_Sebby
             }
         }
 
-        private void BeforeAttack(LeagueSharp.Common.Orbwalking.BeforeAttackEventArgs args)
-        {
-            LogicQ();
-        }
 
         private void Game_OnUpdate(EventArgs args)
         {
@@ -137,6 +117,17 @@ namespace OneKeyToWin_AIO_Sebby
                 if (Config.Item("useR", true).GetValue<KeyBind>().Active)
                 {
                     CastR = true;
+                }
+
+                if (Config.Item("useR2", true).GetValue<KeyBind>().Active)
+                {
+                    CastR2 = true;
+                }
+
+                if (CastR2)
+                {
+                    if (RTarget.IsValidTarget())
+                        Program.CastSpell(R, RTarget);
                 }
 
                 if (CastR)
@@ -154,17 +145,12 @@ namespace OneKeyToWin_AIO_Sebby
                         if (t.IsValidTarget())
                             Program.CastSpell(R, t);
                     }
-                    else
-                    {
-                        var t = HeroManager.Enemies[Config.Item("Semi-manual", true).GetValue<StringList>().SelectedIndex - 2];
-                        if (t.IsValidTarget())
-                            Program.CastSpell(R, t);
-                    }
                 }
             }
             else
             {
                 CastR = false;
+                CastR2 = false;
             }
 
             if (Program.LagFree(1))
@@ -210,7 +196,7 @@ namespace OneKeyToWin_AIO_Sebby
                 foreach (var target in HeroManager.Enemies.Where(target => target.IsValidTarget(2000) && OktwCommon.ValidUlt(target)))
                 {
                     var rDmg = OktwCommon.GetKsDamage(target, R);
-                    if (Program.Combo && target.CountEnemiesInRange(250) > 2 && Config.Item("autoRaoe", true).GetValue<bool>())
+                    if (Program.Combo && target.CountEnemiesInRange(250) > 2 && Config.Item("autoRaoe", true).GetValue<bool>() && target.IsValidTarget(1500))
                         Program.CastSpell(R, target);
                     if(Program.Combo && target.IsValidTarget(W.Range)  && Config.Item("Rkscombo", true).GetValue<bool>() &&  Player.GetAutoAttackDamage(target) * 5 + rDmg + W.GetDamage(target) > target.Health && target.HasBuffOfType(BuffType.Slow) && !OktwCommon.IsSpellHeroCollision(target, R))
                         Program.CastSpell(R, target);
@@ -336,8 +322,21 @@ namespace OneKeyToWin_AIO_Sebby
                 RMANA = R.Instance.ManaCost;
         }
 
+        public void drawText(string msg, Vector3 Hero, System.Drawing.Color color, int weight = 0)
+        {
+            var wts = Drawing.WorldToScreen(Hero);
+            Drawing.DrawText(wts[0] - (msg.Length) * 5, wts[1] + weight, color, msg);
+        }
+
         private void Drawing_OnDraw(EventArgs args)
         {
+            if (Config.Item("rNot", true).GetValue<bool>())
+            {
+                if (RTarget != null)
+                    drawText("R KEY TARGET: " + RTarget.BaseSkinName, Player.Position, System.Drawing.Color.YellowGreen, 150);
+                else
+                    drawText("PLS CLICK LEFT ON R TARGET", Player.Position, System.Drawing.Color.YellowGreen, 150);
+            }
             if (Config.Item("wRange", true).GetValue<bool>())
             {
                 if (Config.Item("onlyRdy", true).GetValue<bool>())

@@ -10,7 +10,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
     class Karthus
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Spell E, Q, R, W;
         private float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
@@ -101,9 +101,9 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                 if (Config.Item("autoZombie", true).GetValue<bool>())
                 {
                     if (Player.CountEnemiesInRange(Q.Range) > 0)
-                        Orbwalker.ActiveMode = LeagueSharp.Common.Orbwalking.OrbwalkingMode.Combo;
+                        Orbwalker.ActiveMode = SebbyLib.Orbwalking.OrbwalkingMode.Combo;
                     else
-                        Orbwalker.ActiveMode = LeagueSharp.Common.Orbwalking.OrbwalkingMode.LaneClear;
+                        Orbwalker.ActiveMode = SebbyLib.Orbwalking.OrbwalkingMode.LaneClear;
                 }
                 if (R.IsReady() && Config.Item("autoRzombie", true).GetValue<bool>())
                 {
@@ -127,7 +127,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             }
             else
             {
-                Orbwalker.ActiveMode = LeagueSharp.Common.Orbwalking.OrbwalkingMode.None;
+                Orbwalker.ActiveMode = SebbyLib.Orbwalking.OrbwalkingMode.None;
             }
 
             if (Program.LagFree(0))
@@ -318,8 +318,11 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             }
             else 
             {
-                if (Program.LaneClear && OktwCommon.CountEnemyMinions(Player, E.Range) >= Config.Item("ELCminions", true).GetValue<Slider>().Value && Player.ManaPercent > Config.Item("Mana", true).GetValue<Slider>().Value)
+                if (Program.LaneClear)
+                {
+                    if (OktwCommon.CountEnemyMinions(Player, E.Range) >= Config.Item("ELCminions", true).GetValue<Slider>().Value && Player.ManaPercent > Config.Item("Mana", true).GetValue<Slider>().Value)
                     E.Cast();
+                }
                 else if (Config.Item("autoE", true).GetValue<bool>() && Player.ManaPercent > Config.Item("Emana", true).GetValue<Slider>().Value && Player.CountEnemiesInRange(E.Range) > 0)
                 {
                     E.Cast();

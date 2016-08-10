@@ -10,7 +10,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
     class Brand
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Spell Q, W, E, R;
         private float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
@@ -101,13 +101,13 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             if (Program.Combo)
             {
                 if (!E.IsReady())
-                    LeagueSharp.Common.Orbwalking.Attack = true;
+                    SebbyLib.Orbwalking.Attack = true;
 
                 else
-                    LeagueSharp.Common.Orbwalking.Attack = false;
+                    SebbyLib.Orbwalking.Attack = false;
             }
             else
-                LeagueSharp.Common.Orbwalking.Attack = true;
+                SebbyLib.Orbwalking.Attack = true;
 
             if (Program.LagFree(0))
             {

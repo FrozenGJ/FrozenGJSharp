@@ -10,14 +10,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Security;
-using System.Security.Permissions;
-using LeagueSharp.Data.DataTypes;
-using LeagueSharp.Data.Enumerations;
 
 #region Namespaces © 2015
 using LeagueSharp;
@@ -71,34 +66,33 @@ namespace Activator
                 GetHeroesInGame();
                 GetComboDamage();
 
+                Origin = new Menu("Activator", "activator", true);
 
-				Origin = new Menu("K活化剂", "activator", true);
-
-                var cmenu = new Menu("Cleansers", "cmenu");
+                Menu cmenu = new Menu("Cleansers", "cmenu");
                 CreateSubMenu(cmenu, false);
                 GetItemGroup("Items.Cleansers").ForEach(t => NewItem((CoreItem) NewInstance(t), cmenu));
                 Origin.AddSubMenu(cmenu);
 
-                var dmenu = new Menu("Defensives", "dmenu");
+                Menu dmenu = new Menu("Defensives", "dmenu");
                 CreateSubMenu(dmenu, false);
                 GetItemGroup("Items.Defensives").ForEach(t => NewItem((CoreItem) NewInstance(t), dmenu));
                 Origin.AddSubMenu(dmenu);
 
-                var smenu = new Menu("Summoners", "smenu");
+                Menu smenu = new Menu("Summoners", "smenu");
                 GetItemGroup("Summoners").ForEach(t => NewSumm((CoreSum) NewInstance(t), smenu));
                 CreateSubMenu(smenu, true, true);
                 Origin.AddSubMenu(smenu);
 
-                var omenu = new Menu("Offensives", "omenu");
+                Menu omenu = new Menu("Offensives", "omenu");
                 CreateSubMenu(omenu, true);
                 GetItemGroup("Items.Offensives").ForEach(t => NewItem((CoreItem) NewInstance(t), omenu));
                 Origin.AddSubMenu(omenu);
 
-                var imenu = new Menu("Consumables", "imenu");
+                Menu imenu = new Menu("Consumables", "imenu");
                 GetItemGroup("Items.Consumables").ForEach(t => NewItem((CoreItem) NewInstance(t), imenu));
                 Origin.AddSubMenu(imenu);
 
-                var amenu = new Menu("Auto Spells", "amenu");
+                Menu amenu = new Menu("Auto Spells", "amenu");
                 CreateSubMenu(amenu, false);
                 GetItemGroup("Spells.Evaders").ForEach(t => NewSpell((CoreSpell) NewInstance(t), amenu));
                 GetItemGroup("Spells.Shields").ForEach(t => NewSpell((CoreSpell) NewInstance(t), amenu));
@@ -107,11 +101,11 @@ namespace Activator
                 GetItemGroup("Spells.Heals").ForEach(t => NewSpell((CoreSpell) NewInstance(t), amenu));
                 Origin.AddSubMenu(amenu);
 
-                var zmenu = new Menu("Misc/Settings", "settings");
+                Menu zmenu = new Menu("Misc/Settings", "settings");
 
                 if (SmiteInGame)
                 {
-                    var ddmenu = new Menu("Drawings", "drawings");
+                    Menu ddmenu = new Menu("Drawings", "drawings");
                     ddmenu.AddItem(new MenuItem("drawsmitet", "Draw Smite Text")).SetValue(true);
                     ddmenu.AddItem(new MenuItem("drawfill", "Draw Smite Fill")).SetValue(true);
                     ddmenu.AddItem(new MenuItem("drawsmite", "Draw Smite Range")).SetValue(true);
@@ -127,7 +121,7 @@ namespace Activator
                     .SetTooltip("Make Activator# think you are taking more damage than calulated.");
                 zmenu.AddItem(new MenuItem("usecombo", "Combo (active)")).SetValue(new KeyBind(32, KeyBindType.Press, true));
 
-                var uumenu = new Menu("Spell Database", "evadem");
+                Menu uumenu = new Menu("Spell Database", "evadem");
                 LoadSpellMenu(uumenu);
                 zmenu.AddSubMenu(uumenu);
 
@@ -153,29 +147,24 @@ namespace Activator
                 // on level up
                 Obj_AI_Base.OnLevelUp += Obj_AI_Base_OnLevelUp;
 
-				//Game.PrintChat("<b>Activator#</b> - Loaded!");
-				Utility.DelayAction.Add(1000, () =>
-				{
-					Game.PrintChat("FrozenGJ".ToHtml(Color.RoyalBlue, FontStlye.Bold) + " - " + "K活化剂已加载。。。　".ToHtml(Color.Goldenrod, FontStlye.Cite));
-				});
-				
+                //Game.PrintChat("<b><font color=\"#FF3366\">Activator#</font></b> - Loaded!");
+                //Updater.UpdateCheck();
 
-				Updater.UpdateCheck();
-
+				FrozenGJ.Info("K活化剂");
 
                 // init valid auto spells
-                foreach (var autospell in Lists.Spells)
+                foreach (CoreSpell autospell in Lists.Spells)
                     if (Player.GetSpellSlot(autospell.Name) != SpellSlot.Unknown)
                         Game.OnUpdate += autospell.OnTick;
 
                 // init valid summoners
-                foreach (var summoner in Lists.Summoners)
+                foreach (CoreSum summoner in Lists.Summoners)
                     if (summoner.Slot != SpellSlot.Unknown ||
                         summoner.ExtraNames.Any(x => Player.GetSpellSlot(x) != SpellSlot.Unknown))
                         Game.OnUpdate += summoner.OnTick;
 
                 // find items (if F5)
-                foreach (var item in Lists.Items)
+                foreach (CoreItem item in Lists.Items)
                 {
                     if (!LeagueSharp.Common.Items.HasItem(item.Id))
                     {
@@ -184,14 +173,16 @@ namespace Activator
 
                     if (!Lists.BoughtItems.Contains(item))
                     {
-                        Game.OnUpdate += item.OnTick;
+                        if (item.Category.Any())
+                            Game.OnUpdate += item.OnTick;
+
+                        if (item.Category.Any(t => t == MenuType.Gapcloser))
+                            AntiGapcloser.OnEnemyGapcloser += item.OnEnemyGapcloser;
+
                         Lists.BoughtItems.Add(item);
-						Game.PrintChat(
-						"FrozenGJ".ToHtml(Color.RoyalBlue, FontStlye.Bold) 
-						+ " - " 
-						+ "[K活化剂] ".ToHtml(Color.Goldenrod, FontStlye.Null)
-						+ (MultiLanguage._(item.Name) + "激活使用　").ToUTF8());
                         //Game.PrintChat("<b>Activator#</b> - <font color=\"#FFF280\">" + item.Name + "</font> active!");
+
+						FrozenGJ.Info("K活化剂",MultiLanguage._(item.Name)+"已激活。。。");
                     }
                 }
             }
@@ -199,8 +190,10 @@ namespace Activator
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Game.PrintChat("Exception thrown at <font color=\"#FFF280\">Activator.OnGameLoad</font>");
-            }
+				//Game.PrintChat("Exception thrown at <font color=\"#FFF280\">Activator.OnGameLoad</font>");
+
+				FrozenGJ.Info("K活化剂", "OnGameLoad异常");
+			}
         }
 
         private static void Obj_AI_Base_OnLevelUp(Obj_AI_Base sender, EventArgs args)
@@ -210,7 +203,7 @@ namespace Activator
                 return;
             }
 
-            var hero = sender as Obj_AI_Hero;
+            Obj_AI_Hero hero = sender as Obj_AI_Hero;
             if (hero == null || !hero.IsMe || MenuGUI.IsShopOpen)
             {
                 return;
@@ -239,18 +232,24 @@ namespace Activator
                 return;
             }
 
-            var itemid = (int) args.Id;
+            int itemid = (int) args.Id;
 
-            foreach (var item in Lists.Items)
+            foreach (CoreItem item in Lists.Items)
             {
                 if (item.Id == itemid)
                 {
                     if (!Lists.BoughtItems.Contains(item))
                     {
-                        Game.OnUpdate += item.OnTick;
+                        if (item.Category.Any())
+                            Game.OnUpdate += item.OnTick;
+
+                        if (item.Category.Any(t => t == MenuType.Gapcloser))
+                            AntiGapcloser.OnEnemyGapcloser += item.OnEnemyGapcloser;
+
                         Lists.BoughtItems.Add(item);
-                        Game.PrintChat("<b>Activator#</b> - <font color=\"#FFF280\">" + item.Name + "</font> active!");
-                    }
+						//Game.PrintChat("<b>Activator#</b> - <font color=\"#FFF280\">" + item.Name + "</font> active!");
+						FrozenGJ.Info("K活化剂",MultiLanguage._(item.Name)+"已经激活。。。");
+					}
                 }
             }
         }
@@ -269,7 +268,8 @@ namespace Activator
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Game.PrintChat("Exception thrown at <font color=\"#FFF280\">Activator.NewItem</font>");
+                //Game.PrintChat("Exception thrown at <font color=\"#FFF280\">Activator.NewItem</font>");
+				FrozenGJ.Info("K活化剂","新物品异常！");
             }
         }
 
@@ -284,8 +284,9 @@ namespace Activator
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Game.PrintChat("Exception thrown at <font color=\"#FFF280\">Activator.NewSpell</font>");
-            }
+				//Game.PrintChat("Exception thrown at <font color=\"#FFF280\">Activator.NewSpell</font>");
+				FrozenGJ.Info("K活化剂", "新技能异常！");
+			}
         }
 
         private static void NewSumm(CoreSum summoner, Menu parent)
@@ -302,15 +303,16 @@ namespace Activator
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Game.PrintChat("Exception thrown at <font color=\"#FFF280\">Activator.NewSumm</font>");
-            }
+                //Game.PrintChat("Exception thrown at <font color=\"#FFF280\">Activator.NewSumm</font>");
+				FrozenGJ.Info("K活化剂", "新召唤师技能异常！");
+			}
         }
 
         private static List<Type> GetItemGroup(string nspace)
         {
             try
             {
-                var allowedTypes = new[] {typeof (CoreItem), typeof (CoreSpell), typeof (CoreSum)};
+                Type[] allowedTypes = new[] {typeof (CoreItem), typeof (CoreSpell), typeof (CoreSum)};
 
                 return
                     Assembly.GetExecutingAssembly()
@@ -325,8 +327,9 @@ namespace Activator
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Game.PrintChat("Exception thrown at <font color=\"#FFF280\">Activator.GetItemGroup</font>");
-                return null;
+                //Game.PrintChat("Exception thrown at <font color=\"#FFF280\">Activator.GetItemGroup</font>");
+				FrozenGJ.Info("K活化剂", "新物品组异常！");
+				return null;
             }
         }
 
@@ -336,16 +339,16 @@ namespace Activator
             {
                 if (entry.Key == Player.ChampionName)
                     foreach (DamageSpell spell in entry.Value)
-                        Somedata.DamageLib.Add(spell.Damage, spell.Slot);
+                        Gamedata.DamageLib.Add(spell.Damage, spell.Slot);
             }
         }
 
         private static void GetHeroesInGame()
         {
-            foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(i => i.Team == Player.Team))
+            foreach (Obj_AI_Hero i in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.Team != Player.Team))
                 Heroes.Add(new Champion(i, 0));
 
-            foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(i => i.Team != Player.Team))
+            foreach (Obj_AI_Hero i in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.Team == Player.Team))
                 Heroes.Add(new Champion(i, 0));
         }
 
@@ -366,78 +369,31 @@ namespace Activator
 
         private static void GetGameTroysInGame()
         {
-            foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.Team != Player.Team))
+            foreach (Obj_AI_Hero i in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.Team != Player.Team))
             {
-                foreach (var item in Gametroydata.Troys.Where(x => x.ChampionName == i.ChampionName))
+                foreach (Troydata item in Troydata.Troys.Where(x => x.ChampionName == i.ChampionName))
                 {
                     TroysInGame = true;
-                    Gametroy.Objects.Add(new Gametroy(i.ChampionName, item.Slot, item.Name, 0, false));
-                    Console.WriteLine("Activator# - SpellList: " + item.Name + " added!");
+                    Gametroy.Troys.Add(new Gametroy(i.ChampionName, item.Slot, item.Name, 0, false));
                 }
             }
         }
 
         private static void GetSpellsInGame()
         {
-            foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.Team != Player.Team))
-            {
-                foreach (var item in Somedata.Spells.Where(x => x.ChampionName == i.ChampionName.ToLower()))
-                {
-                    Somedata.SomeSpells.Add(item);
-                    Console.WriteLine("Activator# - SpellList: " + item.SDataName + " added!");
-                }
-            }
-
-            Utility.DelayAction.Add(1000, LoadSpellData);
-        }
-
-        private static void LoadSpellData()
-        {
-            try
-            {
-                foreach (var adata in Somedata.SomeSpells)
-                {
-                    foreach (
-                        var entry in
-                            LeagueSharp.Data.Data.Get<SpellDatabase>()
-                                .Spells.Where(
-                                    x => String.Equals(x.SpellName, adata.SDataName, StringComparison.CurrentCultureIgnoreCase))
-                        )
-                    {
-                        adata.Delay = entry.Delay;
-                        adata.Speed = entry.MissileSpeed;
-                        adata.Range = entry.Range;
-                        adata.Width = entry.Radius;
-                        adata.SpellType = entry.SpellType;
-                        adata.MissileName = entry.MissileSpellName;
-                        adata.ExtraMissileNames = entry.ExtraMissileNames;
-                        adata.SpellTags = entry.SpellTags;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                Game.PrintChat("Exception thrown at <font color=\"#FFF280\">Activator.LoadSpellData</font>");
-            }
+            foreach (Obj_AI_Hero i in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.Team != Player.Team))
+                foreach (Gamedata item in Gamedata.Spells.Where(x => x.ChampionName == i.ChampionName.ToLower()))
+                    Gamedata.CachedSpells.Add(item);
         }
 
         private static void GetAurasInGame()
         {
-            foreach (var i in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.Team != Player.Team))
-            {
-                foreach (var aura in Buffdata.BuffList.Where(x => x.Champion == i.ChampionName && x.Champion != null))
-                {
-                    Buffdata.SomeAuras.Add(aura);
-                    Console.WriteLine("Activator# - AuraList: " + aura.Name + " added!");
-                }
-            }
+            foreach (Obj_AI_Hero i in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.Team != Player.Team))
+                foreach (Auradata aura in Auradata.BuffList.Where(x => x.Champion == i.ChampionName && x.Champion != null))
+                    Auradata.CachedAuras.Add(aura);
 
-            foreach (var generalaura in Buffdata.BuffList.Where(x => string.IsNullOrEmpty(x.Champion)))
-            {
-                Buffdata.SomeAuras.Add(generalaura);
-                Console.WriteLine("Activator# - AuraList: " + generalaura.Name + " added!");
-            }
+            foreach (Auradata generalaura in Auradata.BuffList.Where(x => string.IsNullOrEmpty(x.Champion)))
+                Auradata.CachedAuras.Add(generalaura);
         }
 
         public static IEnumerable<Champion> Allies()
@@ -445,13 +401,13 @@ namespace Activator
             switch (Origin.Item("healthp").GetValue<StringList>().SelectedIndex)
             {
                 case 0:
-                    return Heroes.Where(h => h.Player.IsAlly)
+                    return Heroes.Where(h => h.Player.IsAlly && !h.Player.IsDead)
                         .OrderBy(h => h.Player.Health / h.Player.MaxHealth * 100);
                 case 1:
-                    return Heroes.Where(h => h.Player.IsAlly)
+                    return Heroes.Where(h => h.Player.IsAlly && !h.Player.IsDead)
                         .OrderByDescending(h => h.Player.FlatPhysicalDamageMod + h.Player.FlatMagicDamageMod);
                 case 2:
-                    return Heroes.Where(h => h.Player.IsAlly)
+                    return Heroes.Where(h => h.Player.IsAlly && !h.Player.IsDead)
                         .OrderByDescending(h => h.Player.Health);
             }
 
@@ -460,15 +416,15 @@ namespace Activator
 
         private static void CreateSubMenu(Menu parent, bool enemy, bool both = false)
         {
-            var menu = new Menu("Config", parent.Name + "sub");
+            Menu menu = new Menu("Config", parent.Name + "sub");
 
-            var ireset = new MenuItem(parent.Name + "clear", "Deselect [All]");
+            MenuItem ireset = new MenuItem(parent.Name + "clear", "Deselect [All]");
             menu.AddItem(ireset).SetValue(false);
 
-            foreach (var hero in both ? HeroManager.AllHeroes : enemy ? HeroManager.Enemies : HeroManager.Allies)
+            foreach (Obj_AI_Hero hero in both ? HeroManager.AllHeroes : enemy ? HeroManager.Enemies : HeroManager.Allies)
             {
-                var side = hero.Team == Player.Team ? "[Ally]" : "[Enemy]";
-                var mitem = new MenuItem(parent.Name + "useon" + hero.NetworkId, "Use for " + hero.ChampionName + " " + side);
+                string side = hero.Team == Player.Team ? "[Ally]" : "[Enemy]";
+                MenuItem mitem = new MenuItem(parent.Name + "useon" + hero.NetworkId, "Use for " + hero.ChampionName + " " + side);
 
                 menu.AddItem(mitem.DontSave()).SetValue(true);
 
@@ -482,7 +438,7 @@ namespace Activator
             {
                 if (args.GetNewValue<bool>())
                 {
-                    foreach (var hero in 
+                    foreach (Obj_AI_Hero hero in 
                      both ? HeroManager.AllHeroes
                           : enemy
                             ? HeroManager.Enemies
@@ -498,34 +454,32 @@ namespace Activator
 
         private static void LoadSpellMenu(Menu parent)
         {
-            foreach (var unit in Heroes.Where(h => h.Player.Team != Player.Team))
+            foreach (Champion unit in Heroes.Where(h => h.Player.Team != Player.Team))
             {
-                var menu = new Menu(unit.Player.ChampionName, unit.Player.NetworkId + "menu");
+                Menu menu = new Menu(unit.Player.ChampionName, unit.Player.NetworkId + "menu");
 
                 // new menu per spell
-                foreach (var entry in Somedata.Spells)
+                foreach (Gamedata entry in Gamedata.Spells)
                 {
                     if (entry.ChampionName == unit.Player.ChampionName.ToLower())
                     {
-                        var newmenu = new Menu(entry.SDataName, entry.SDataName);
+                        Menu newmenu = new Menu(entry.SDataName, entry.SDataName);
 
                         // activation parameters
                         newmenu.AddItem(new MenuItem(entry.SDataName + "predict", "enabled").DontSave())
                             .SetValue(true);
                         newmenu.AddItem(new MenuItem(entry.SDataName + "danger", "danger").DontSave())
-                            .SetValue(entry.HitType.Contains(HitType.Danger));
+                            .SetValue(entry.HitTypes.Contains(HitType.Danger));
                         newmenu.AddItem(new MenuItem(entry.SDataName + "crowdcontrol", "crowdcontrol").DontSave())
-                            .SetValue(entry.HitType.Contains(HitType.CrowdControl));
+                            .SetValue(entry.HitTypes.Contains(HitType.CrowdControl));
                         newmenu.AddItem(new MenuItem(entry.SDataName + "ultimate", "danger ultimate").DontSave())
-                            .SetValue(entry.HitType.Contains(HitType.Ultimate));
+                            .SetValue(entry.HitTypes.Contains(HitType.Ultimate));
                         newmenu.AddItem(new MenuItem(entry.SDataName + "forceexhaust", "force exhaust").DontSave())
-                            .SetValue(entry.HitType.Contains(HitType.ForceExhaust));
+                            .SetValue(entry.HitTypes.Contains(HitType.ForceExhaust));
                         menu.AddSubMenu(newmenu);
 
-                        Utility.DelayAction.Add(5000,
-                            () => newmenu.Item(entry.SDataName + "predict")
-                                 .SetValue(entry.SpellTags.Contains(SpellTags.Damage) ||
-                                           entry.SpellTags.Contains(SpellTags.CrowdControl)));
+                        Utility.DelayAction.Add(5000, 
+                            () => newmenu.Item(entry.SDataName + "predict").SetValue(entry.CastRange != 0));
                     }
                 }
 
@@ -537,9 +491,9 @@ namespace Activator
         {
             try
             {
-                var target = type.GetConstructor(Type.EmptyTypes);
-                var dynamic = new DynamicMethod(string.Empty, type, new Type[0], target.DeclaringType);
-                var il = dynamic.GetILGenerator();
+                ConstructorInfo target = type.GetConstructor(Type.EmptyTypes);
+                DynamicMethod dynamic = new DynamicMethod(string.Empty, type, new Type[0], target.DeclaringType);
+                ILGenerator il = dynamic.GetILGenerator();
 
                 il.DeclareLocal(target.DeclaringType);
                 il.Emit(OpCodes.Newobj, target);
@@ -547,15 +501,16 @@ namespace Activator
                 il.Emit(OpCodes.Ldloc_0);
                 il.Emit(OpCodes.Ret);
 
-                var method = (Func<object>) dynamic.CreateDelegate(typeof(Func<object>));
+                Func<object> method = (Func<object>) dynamic.CreateDelegate(typeof(Func<object>));
                 return method();
             }
 
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Game.PrintChat("Exception thrown at <font color=\"#FFF280\">Activator.NewInstance</font>");
-                return null;
+                //Game.PrintChat("Exception thrown at <font color=\"#FFF280\">Activator.NewInstance</font>");
+				FrozenGJ.Info("K活化剂", "新实例异常！");
+				return null;
             }
         }
     }

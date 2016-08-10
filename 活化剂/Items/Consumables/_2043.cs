@@ -18,11 +18,6 @@ namespace Activator.Items.Consumables
         internal override int DefaultHP => 0;
         internal override int DefaultMP => 0;
 
-        public _2043()
-        {
-            Stealth.Init();
-        }
-
         public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>() || !IsReady())

@@ -10,7 +10,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
     class TwistedFate
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Spell Q, W, E, R;
         private float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         private string temp = null;
@@ -66,7 +66,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             Game.OnUpdate += Game_OnGameUpdate;
             Drawing.OnEndScene += Drawing_OnEndScene;
             Drawing.OnDraw += Drawing_OnDraw;
-            LeagueSharp.Common.Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
+            SebbyLib.Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
             Game.OnWndProc += Game_OnWndProc;
         }
 
@@ -81,7 +81,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             }
         }
 
-        private void Orbwalking_BeforeAttack(LeagueSharp.Common.Orbwalking.BeforeAttackEventArgs args)
+        private void Orbwalking_BeforeAttack(SebbyLib.Orbwalking.BeforeAttackEventArgs args)
         {
             if(Program.Combo && W.IsReady() && FindCard == 1 && W.Instance.Name != "PickACard" &&  Config.Item("WblockAA", true).GetValue<bool>())
             {
@@ -325,7 +325,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             var t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
             if (t.IsValidTarget())
             {
-                    if (OktwCommon.GetKsDamage(t, Q)> t.Health && !LeagueSharp.Common.Orbwalking.InAutoAttackRange(t))
+                    if (OktwCommon.GetKsDamage(t, Q)> t.Health && !SebbyLib.Orbwalking.InAutoAttackRange(t))
                         Program.CastSpell(Q, t);
 
                     if (W.Instance.CooldownExpires - Game.Time < W.Instance.Cooldown - 1.3 && W.Instance.Name == "PickACard" && (W.Instance.CooldownExpires - Game.Time > 3 || Player.CountEnemiesInRange(950) == 0))

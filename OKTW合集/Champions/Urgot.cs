@@ -11,7 +11,7 @@ namespace OneKeyToWin_AIO_Sebby
     {
 
         private Menu Config = Program.Config;
-        private static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        private static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Spell Q, Q2, W, E, R;
         private float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         private double OverFarm = 0, lag = 0;
@@ -36,8 +36,8 @@ namespace OneKeyToWin_AIO_Sebby
 
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
-            LeagueSharp.Common.Orbwalking.BeforeAttack += BeforeAttack;
-            //LeagueSharp.Common.Orbwalking.AfterAttack += afterAttack;
+            SebbyLib.Orbwalking.BeforeAttack += BeforeAttack;
+            //SebbyLib.Orbwalking.AfterAttack += afterAttack;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Interrupter.OnPossibleToInterrupt += OnInterruptableSpell;
         }
@@ -100,7 +100,7 @@ namespace OneKeyToWin_AIO_Sebby
             }
         }
 
-        private void BeforeAttack(LeagueSharp.Common.Orbwalking.BeforeAttackEventArgs args)
+        private void BeforeAttack(SebbyLib.Orbwalking.BeforeAttackEventArgs args)
         {
             if (FarmId != args.Target.NetworkId)
                 FarmId = args.Target.NetworkId;
@@ -174,7 +174,7 @@ namespace OneKeyToWin_AIO_Sebby
         {
             if (Program.Farm && Config.Item("farmQ", true).GetValue<bool>())
                 farmQ();
-            else if (Config.Item("stack", true).GetValue<bool>() && Utils.TickCount - Q.LastCastAttemptT > 4000 && !Player.HasBuff("Recall") && Player.Mana > Player.MaxMana * 0.95 && Orbwalker.ActiveMode == LeagueSharp.Common.Orbwalking.OrbwalkingMode.None && (Items.HasItem(Tear) || Items.HasItem(Manamune)))
+            else if (Config.Item("stack", true).GetValue<bool>() && Utils.TickCount - Q.LastCastAttemptT > 4000 && !Player.HasBuff("Recall") && Player.Mana > Player.MaxMana * 0.95 && Orbwalker.ActiveMode == SebbyLib.Orbwalking.OrbwalkingMode.None && (Items.HasItem(Tear) || Items.HasItem(Manamune)))
                 Q.Cast(Player.ServerPosition);
         }
         private void LogicQ()
@@ -290,7 +290,7 @@ namespace OneKeyToWin_AIO_Sebby
                     return;
             }
 
-            if (Config.Item("LC", true).GetValue<bool>() && Program.LaneClear && !LeagueSharp.Common.Orbwalking.CanAttack() && Player.ManaPercent > Config.Item("Mana", true).GetValue<Slider>().Value)
+            if (Config.Item("LC", true).GetValue<bool>() && Program.LaneClear && !SebbyLib.Orbwalking.CanAttack() && Player.ManaPercent > Config.Item("Mana", true).GetValue<Slider>().Value)
             {
                 var LCP = Config.Item("LCP", true).GetValue<bool>();
 

@@ -108,9 +108,9 @@ namespace SFXUtility.Features.Activators
                 }
                 Menu.AddSubMenu(invisibleMenu);
 
-                Menu.AddItem(new MenuItem(Name + "Bush", "Bush").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Bush", "Bush").SetValue(true));
                 Menu.AddItem(new MenuItem(Name + "Hotkey", "Hotkey").SetValue(new KeyBind(32, KeyBindType.Press)));
-                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(true));
 
                 Parent.Menu.AddSubMenu(Menu);
             }

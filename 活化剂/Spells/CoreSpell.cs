@@ -119,6 +119,7 @@ namespace Activator.Spells
             if (LowTarget != null)
             {
                 if (!Player.IsRecalling() &&
+                    !Player.HasBuffOfType(BuffType.Invisibility) &&
                     !Player.Spellbook.IsChanneling &&
                     !Player.IsChannelingImportantSpell())
                 {

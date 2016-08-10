@@ -37,7 +37,7 @@ namespace LeagueSharp.Common {
 			new HeroNameEntity("Braum", "布隆", new[] { "弗雷尔卓德之心" }),
 			new HeroNameEntity("Caitlyn", "皮城女警", new[] { "凯瑟琳" }),
 			new HeroNameEntity("Cassiopeia", "蛇女", new[] { "蛇魔之拥", "卡西奥佩娅" }),
-			new HeroNameEntity("Cho'Gath", "虚空恐惧", new[] { "科加斯", "大虫子" }),
+			new HeroNameEntity("ChoGath", "虚空恐惧", new[] { "科加斯", "大虫子" }),
 			new HeroNameEntity("Corki", "飞行投弹手", new[] { "库奇", "飞机" }),
 			new HeroNameEntity("Darius", "诺克萨斯之手", new[] { "德莱厄斯", "诺手", "小学生之手" }),
 			new HeroNameEntity("Diana", "黛安娜", new[] { "皎月女神" }),
@@ -71,9 +71,9 @@ namespace LeagueSharp.Common {
 			new HeroNameEntity("Katarina", "卡特琳娜", new[] { "不祥之刃" }),
 			new HeroNameEntity("Kayle", "审判天使", new[] { "凯尔" }),
 			new HeroNameEntity("Kennen", "凯南", new[] { "狂暴之心", "电耗子" }),
-			new HeroNameEntity("Kha'Zix", "卡兹克", new[] { "虚空掠夺者", "螳螂" }),
+			new HeroNameEntity("KhaZix", "卡兹克", new[] { "虚空掠夺者", "螳螂" }),
 			new HeroNameEntity("Kindred", "千珏", new[] { "永猎双子" }),
-			new HeroNameEntity("Kog'Maw", "深渊巨口", new[] { "大嘴", "克格莫" }),
+			new HeroNameEntity("KogMaw", "深渊巨口", new[] { "大嘴", "克格莫" }),
 			new HeroNameEntity("LeBlanc", "诡术妖姬", new[] { "乐芙兰" }),
 			new HeroNameEntity("LeeSin", "盲僧", new[] { "李青", "瞎子" }),
 			new HeroNameEntity("Leona", "曙光女神", new[] { "蕾欧娜", "日女" }),
@@ -100,7 +100,7 @@ namespace LeagueSharp.Common {
 			new HeroNameEntity("Poppy", "波比", new[] { "钢铁大使" }),
 			new HeroNameEntity("Quinn", "奎因", new[] { "德玛西亚之翼" }),
 			new HeroNameEntity("Rammus", "披甲龙龟", new[] { "拉莫斯" }),
-			new HeroNameEntity("Rek'Sai", "虚空遁地兽", new[] { "雷克塞", "挖掘机" }),
+			new HeroNameEntity("RekSai", "虚空遁地兽", new[] { "雷克塞", "挖掘机" }),
 			new HeroNameEntity("Renekton", "荒漠屠夫", new[] { "雷克顿", "鳄鱼" }),
 			new HeroNameEntity("Rengar", "狮子狗", new[] { "傲之追猎者", "雷恩加尔" }),
 			new HeroNameEntity("Riven", "瑞文", new[] { "放逐之刃", "锐雯" }),
@@ -126,7 +126,7 @@ namespace LeagueSharp.Common {
 			new HeroNameEntity("Vladimir", "吸血鬼", new[] { "弗拉基米尔", "猩红收割者" }),
 			new HeroNameEntity("Viktor", "维克托", new[] { "机械先驱", "三只手" }),
 			new HeroNameEntity("Vi", "蔚", new[] { "皮城执法官" }),
-			new HeroNameEntity("Vel'Koz", "虚空之眼", new[] { "维克兹", "大眼怪" }),
+			new HeroNameEntity("VelKoz", "虚空之眼", new[] { "维克兹", "大眼怪" }),
 			new HeroNameEntity("Veigar", "邪恶小法师", new[] { "维迦" }),
 			new HeroNameEntity("Vayne", "薇恩", new[] { "VN", "暗夜猎手" }),
 			new HeroNameEntity("Varus", "维鲁斯", new[] { "惩戒之箭", "反向Q", "高德伟", "GodV" }),
@@ -159,13 +159,46 @@ namespace LeagueSharp.Common {
 		#endregion
 
 		public static string GetHeroName(string ChampionName) {
-			var name = HeroNameList.Find(h => h.ChampionName == ChampionName)?.CNName.Trim();
+			var name = HeroNameList.Find(h => String.Equals(h.ChampionName, ChampionName, StringComparison.CurrentCultureIgnoreCase))?.CNName.Trim();
 			return string.IsNullOrEmpty(name) ? ChampionName : name;
 		}
 
 		public static string CnName(this Obj_AI_Hero hero) {
 			return GetHeroName(hero.ChampionName);
 		}
-	}
 
+		public static string ChampionNameWithTab(this Obj_AI_Hero hero)
+		{
+			var name = "";
+			if (Config.SelectedLanguage == "Chinese")
+			{
+				name = GetHeroName(hero.ChampionName);
+			}
+			else
+			{
+				name = hero.ChampionName;
+			}
+
+			var space = "";
+			var length = 7-name.Length;
+			for (int i = 0; i < length; i++)
+			{
+				space += "　";
+			}
+			name += space;
+			return name;
+		}
+
+		public static string ChampionName(this Obj_AI_Hero hero)
+		{
+			if (Config.SelectedLanguage == "Chinese")
+			{
+				return GetHeroName(hero.ChampionName);
+			}
+			else
+			{
+				return hero.ChampionName;
+			}
+		}
+	}
 }

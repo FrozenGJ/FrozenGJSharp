@@ -10,7 +10,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
     class Jayce
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Spell Q, Q2, Qext, QextCol, W, W2, E, E2, R;
         private float QMANA = 0, WMANA = 0, EMANA = 0, QMANA2 = 0, WMANA2 = 0, EMANA2 = 0, RMANA = 0;
         private float Qcd, Wcd, Ecd, Q2cd, W2cd, E2cd;
@@ -94,7 +94,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
 
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnUpdate += OnUpdate;
-            LeagueSharp.Common.Orbwalking.BeforeAttack += BeforeAttack;
+            SebbyLib.Orbwalking.BeforeAttack += BeforeAttack;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
             Spellbook.OnCastSpell += Spellbook_OnCastSpell;
             Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
@@ -180,7 +180,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             }
         }
 
-        private void BeforeAttack(LeagueSharp.Common.Orbwalking.BeforeAttackEventArgs args)
+        private void BeforeAttack(SebbyLib.Orbwalking.BeforeAttackEventArgs args)
         {
             if (W.IsReady() && Config.Item("autoW", true).GetValue<bool>() && Range && args.Target is Obj_AI_Hero)
             {
@@ -207,9 +207,9 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             {
                 
                 if (Config.Item("autoWmove", true).GetValue<bool>() && Orbwalker.GetTarget() != null && Player.HasBuff("jaycehyperchargevfx"))
-                    LeagueSharp.Common.Orbwalking.Move = false;
+                    SebbyLib.Orbwalking.Move = false;
                 else
-                    LeagueSharp.Common.Orbwalking.Move = true;
+                    SebbyLib.Orbwalking.Move = true;
 
                 if (Program.LagFree(1) && Q.IsReady() && Config.Item("autoQ", true).GetValue<bool>())
                     LogicQ();
@@ -219,6 +219,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             }
             else
             {
+                SebbyLib.Orbwalking.Move = true;
                 if (Program.LagFree(1) && E2.IsReady() && Config.Item("autoEm", true).GetValue<bool>())
                     LogicE2();
 
@@ -487,7 +488,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                         }
                         if (W.IsReady() && Config.Item("jungleE", true).GetValue<bool>())
                         {
-                            if( LeagueSharp.Common.Orbwalking.InAutoAttackRange(mob))
+                            if( SebbyLib.Orbwalking.InAutoAttackRange(mob))
                                 W.Cast();
                             return;
                         }

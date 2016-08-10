@@ -1,5 +1,5 @@
 ﻿using System;
-using Activator.Handlers;
+using Activator.Base;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -28,7 +28,7 @@ namespace Activator.Summoners
                     if (hero.Player.Distance(Player.ServerPosition) > Range)
                         return;
 
-                    Buffs.CheckCleanse(hero.Player);
+                    Helpers.CheckCleanse(hero.Player);
 
                     if (hero.CleanseBuffCount >= Menu.Item("use" + Name + "number").GetValue<Slider>().Value &&
                         hero.CleanseHighestBuffTime >= Menu.Item("use" + Name + "time").GetValue<Slider>().Value)

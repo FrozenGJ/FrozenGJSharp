@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Activator.Base;
+using Activator.Handlers;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -152,15 +153,18 @@ namespace Activator.Items
             {
                 Menu = new Menu(Name, "m" + Name);
                 Menu.AddItem(new MenuItem("use" + Name, "Use " + DisplayName ?? Name)).SetValue(true);
+
                 Menu.AddItem(new MenuItem("prior" + Name, DisplayName + " Priority"))
                     .SetValue(new Slider(Priority, 1, 7))
                     .SetTooltip("The Priority " + Name + " Will Activate Over Another Item (7 = Highest)");
 
-                if (Category.Any(t => t == MenuType.SelfLowHP) &&
-                   (Name.Contains("Pot") || Name.Contains("Flask") || Name.Contains("Biscuit")))
+                if (Category.Any(t => t == MenuType.SelfLowHP))
                 {
-                    Menu.AddItem(new MenuItem("use" + Name + "cbat", "Use Only In Combat"))
-                        .SetValue(false).SetTooltip("aka Taking damage from Minions and Heroes");
+                    if (Name.Contains("Pot") || Name.Contains("Flask") || Name.Contains("Biscuit"))
+                    {
+                        Menu.AddItem(new MenuItem("use" + Name + "cbat", "Use Only In Combat"))
+                            .SetValue(false).SetTooltip("aka Taking damage from Minions and Heroes");
+                    }
                 }
 
                 if (Category.Any(t => t == MenuType.EnemyLowHP))
@@ -185,7 +189,7 @@ namespace Activator.Items
                         .SetValue(new Slider(DefaultMP));
 
                 if (Category.Any(t => t == MenuType.SelfCount))
-                    Menu.AddItem(new MenuItem("selfcount" + Name, "Use On Enemy Near Count >="))
+                    Menu.AddItem(new MenuItem("selfcount" + Name, "Use on Enemy Near Count >="))
                         .SetValue(new Slider(2, 1, 5));
 
                 if (Category.Any(t => t == MenuType.SelfMinMP))
@@ -193,6 +197,31 @@ namespace Activator.Items
 
                 if (Category.Any(t => t == MenuType.SelfMinHP))
                     Menu.AddItem(new MenuItem("selfminhp" + Name + "pct", "Minimum HP %")).SetValue(new Slider(55));
+
+                if (Category.Any(t => t == MenuType.Gapcloser))
+                {
+
+                    var imenu = new Menu("Extra " + Name +" Settings", "miscmenu" + Name);
+
+                    imenu.AddItem(new MenuItem("enemygap" + Name, Name + " on Gapcloser"))
+                        .SetValue(true);
+
+                    imenu.AddItem(new MenuItem("enemygapmelee" + Name, "-> Melee Only"))
+                        .SetValue(false)
+                        .Show(imenu.Item("enemygap" + Name).GetValue<bool>());
+
+                    imenu.AddItem(new MenuItem("enemygapdanger" + Name, "-> Dangerous Only"))
+                        .SetValue(true)
+                        .Show(imenu.Item("enemygap" + Name).GetValue<bool>());
+
+                    imenu.Item("enemygap" + Name).ValueChanged += (sender, args) =>
+                    {
+                        imenu.Item("enemygapmelee" + Name).Show(args.GetNewValue<bool>());
+                        imenu.Item("enemygapdanger" + Name).Show(args.GetNewValue<bool>());
+                    };
+
+                    Menu.AddSubMenu(imenu);
+                }
 
                 if (Category.Any(t => t == MenuType.Zhonyas))
                 {
@@ -205,8 +234,11 @@ namespace Activator.Items
                     var ccmenu = new Menu(Name + " Buff Types", Name.ToLower() + "cdeb");
                     var ssmenu = new Menu(Name + " Unique Buffs", Name.ToLower() + "xspe");
 
-                    foreach (var b in Data.Buffdata.BuffList.Where(x => x.MenuName != null && (x.Cleanse || x.DoT))
-                        .OrderByDescending(x => x.DoT).ThenBy(x => x.Evade).ThenBy(x => x.MenuName))
+                    foreach (var b in Data.Auradata.BuffList
+                        .Where(x => x.MenuName != null && (x.Cleanse || x.DoT))
+                        .OrderByDescending(x => x.DoT)
+                        .ThenBy(x => x.Evade)
+                        .ThenBy(x => x.MenuName))
                     {
                         string xdot = b.DoT && b.Cleanse ? "[Danger]" : (b.DoT ? "[DoT]" : "[Danger]");
 
@@ -237,9 +269,11 @@ namespace Activator.Items
                     if (Id == 3222)
                         Menu.AddSubMenu(ssmenu);
 
-                    Menu.AddItem(new MenuItem("use" + Name + "number", "Min Buffs to Use"))
-                        .SetValue(new Slider(DefaultHP / 5, 1, 5)).SetTooltip("Will Only " + Name + " if Your Buff Count is >= Value");
-                    Menu.AddItem(new MenuItem("use" + Name + "time", "Min Durration to Use"))
+                    Menu.AddItem(new MenuItem("use" + Name + "number", "Minimum Buffs to Use"))
+                        .SetValue(new Slider(DefaultHP/5, 1, 5))
+                        .SetTooltip("Will Only " + Name + " if Your Buff Count is >= " +
+                                    Menu.Item("use" + Name + "number").GetValue<Slider>().Value);
+                    Menu.AddItem(new MenuItem("use" + Name + "time", "Minimum Durration to Use"))
                         .SetValue(new Slider(500, 250, 2000))
                         .SetTooltip("Will not use unless the buff durration (stun, snare, etc) last at least this long (ms, 500 = 0.5 seconds)");
 
@@ -251,11 +285,11 @@ namespace Activator.Items
                             .SetValue(new Slider(35)).SetTooltip("Will " + Name + " DoTs Spells if Below HP%");
                     }
 
-                    Menu.AddItem(new MenuItem("use" + Name + "delay", "Activation Delay (in ms)")).SetValue(new Slider(55, 0, 500));
+                    Menu.AddItem(new MenuItem("use" + Name + "delay", "Activation Delay (in ms)")).SetValue(new Slider(0, 0, 500));
                 }
 
                 if (Category.Any(t => t == MenuType.ActiveCheck))
-                    Menu.AddItem(new MenuItem("mode" + Name, "Mode: "))
+                    Menu.AddItem(new MenuItem("mode" + Name, Name + " Mode: "))
                         .SetValue(new StringList(new[] { "Always", "Combo" }));
 
                 root.AddSubMenu(Menu);
@@ -271,6 +305,11 @@ namespace Activator.Items
         }
 
         public virtual void OnTick(EventArgs args)
+        {
+
+        }
+
+        public virtual void OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
 
         }

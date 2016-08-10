@@ -11,7 +11,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
     class Jhin
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Spell E, Q, R, W;
         private float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         private bool Ractive = false;
@@ -37,9 +37,9 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             E = new Spell(SpellSlot.E, 760);
             R = new Spell(SpellSlot.R, 3500);
 
-            W.SetSkillshot(0.75f, 40, float.MaxValue, false, SkillshotType.SkillshotLine);
-            E.SetSkillshot(1.3f, 200, 1600, false, SkillshotType.SkillshotCircle);
-            R.SetSkillshot(0.2f, 80, 5000, false, SkillshotType.SkillshotLine);
+            W.SetSkillshot(0.75f, 40, 10000, false, SkillshotType.SkillshotLine);
+            E.SetSkillshot(1f, 120, 1600, false, SkillshotType.SkillshotCircle);
+            R.SetSkillshot(0.24f, 80, 5000, false, SkillshotType.SkillshotLine);
 
             Config.SubMenu(Player.ChampionName).SubMenu("Draw").AddItem(new MenuItem("qRange", "Q range", true).SetValue(false));
             Config.SubMenu(Player.ChampionName).SubMenu("Draw").AddItem(new MenuItem("wRange", "W range", true).SetValue(false));
@@ -164,16 +164,16 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             {
                 OktwCommon.blockMove = true;
                 OktwCommon.blockAttack = true;
-                LeagueSharp.Common.Orbwalking.Attack = false;
-                LeagueSharp.Common.Orbwalking.Move = false;
+                SebbyLib.Orbwalking.Attack = false;
+                SebbyLib.Orbwalking.Move = false;
                 return;
             }
             else
             {
                 OktwCommon.blockMove = false;
                 OktwCommon.blockAttack = false;
-                LeagueSharp.Common.Orbwalking.Attack = true;
-                LeagueSharp.Common.Orbwalking.Move = true;
+                SebbyLib.Orbwalking.Attack = true;
+                SebbyLib.Orbwalking.Move = true;
             }
 
 
@@ -292,7 +292,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                     E.Cast(trapPos);
 
                 foreach (var enemy in HeroManager.Enemies.Where(enemy => enemy.IsValidTarget(E.Range) && !OktwCommon.CanMove(enemy)))
-                    E.Cast(enemy.ServerPosition);
+                    E.Cast(enemy);
             }
 
             var t = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);
@@ -360,7 +360,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                 }
 
             }
-            else if(!LeagueSharp.Common.Orbwalking.CanAttack() && !Player.IsWindingUp)
+            else if(!SebbyLib.Orbwalking.CanAttack() && !Player.IsWindingUp)
             {
                 var t = torb as Obj_AI_Hero;
                 if (t.Health < GetQdmg(t) + GetWdmg(t))

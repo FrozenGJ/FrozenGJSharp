@@ -42,7 +42,6 @@ namespace LeagueSharp.SDK.UI
         private MenuCustomizer(Menu parentMenu)
             : base("menucustomizer", "Menu", false, string.Empty)
         {
-
 			//修改的内容：添加起头
 			Game.PrintChat("[FrozenGJ SDK]".ToHtml(32) + "-" + " FrozenGJ 脚本群@(10642347)致力于提供最好用，最实用的脚本供中国玩家使用".ToHtml(System.Drawing.Color.MediumOrchid));
 

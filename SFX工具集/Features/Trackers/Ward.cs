@@ -141,7 +141,7 @@ namespace SFXUtility.Features.Trackers
                 Menu.AddItem(new MenuItem(Name + "Hotkey", "Hotkey").SetValue(new KeyBind(16, KeyBindType.Press)));
                 Menu.AddItem(new MenuItem(Name + "PermaShow", "Perma Show").SetValue(false));
 
-                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(true));
 
                 Parent.Menu.AddSubMenu(Menu);
 

@@ -10,7 +10,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
     class Thresh
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Spell E, Epush, Q, R, W;
         private static Obj_AI_Base Marked;
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
@@ -20,7 +20,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             Q = new Spell(SpellSlot.Q, 1075);
             W = new Spell(SpellSlot.W, 950);
             E = new Spell(SpellSlot.E, 480);
-            R = new Spell(SpellSlot.R, 420);
+            R = new Spell(SpellSlot.R, 400);
             Epush = new Spell(SpellSlot.E, 450);
 
             Q.SetSkillshot(0.5f, 70, 1900f, true, SkillshotType.SkillshotLine);
@@ -138,7 +138,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                     CastW(allyHero.Position);
                 }
             }
-            if (E.IsReady() && Config.Item("Gap", true).GetValue<bool>() && gapcloser.Sender.IsValidTarget(E.Range))
+            if (E.IsReady() && Config.Item("Gap", true).GetValue<bool>() && gapcloser.Sender.IsValidTarget(E.Range) && !Marked.IsValidTarget())
             {
                 E.Cast(gapcloser.Sender);
             }
@@ -154,13 +154,13 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             if (Program.Combo && Config.Item("AACombo", true).GetValue<bool>())
             {
                 if (!E.IsReady())
-                    LeagueSharp.Common.Orbwalking.Attack = true;
+                    SebbyLib.Orbwalking.Attack = true;
 
                 else
-                    LeagueSharp.Common.Orbwalking.Attack = false;
+                    SebbyLib.Orbwalking.Attack = false;
             }
             else
-                LeagueSharp.Common.Orbwalking.Attack = true;
+                SebbyLib.Orbwalking.Attack = true;
 
             if (Marked.IsValidTarget())
             {
@@ -200,7 +200,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
         private void LogicE()
         {
             var t = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);
-            if (t.IsValidTarget()  && OktwCommon.CanMove(t))
+            if (t.IsValidTarget()  && OktwCommon.CanMove(t) && !Marked.IsValidTarget())
             {
                 
                 if (Program.Combo)
@@ -268,14 +268,16 @@ namespace OneKeyToWin_AIO_Sebby.Champions
 
         private void LogicR()
         {
-            bool rKs = Config.Item("rKs", true).GetValue<bool>();
-            foreach (var target in HeroManager.Enemies.Where(target => target.IsValidTarget(R.Range) && target.HasBuff("rocketgrab2")))
-            {
-                if (rKs && R.GetDamage(target) > target.Health)
-                    R.Cast();
-            }
-            if (Player.CountEnemiesInRange(R.Range) >= Config.Item("rCount", true).GetValue<Slider>().Value && Config.Item("rCount", true).GetValue<Slider>().Value > 0)
+
+            var rCountOut = Player.CountEnemiesInRange(R.Range);
+            var rCountIn = Player.CountEnemiesInRange(R.Range - 180);
+
+            if (rCountOut < rCountIn)
+                return;
+
+            if (rCountOut >= Config.Item("rCount", true).GetValue<Slider>().Value && Config.Item("rCount", true).GetValue<Slider>().Value > 0)
                 R.Cast();
+
             if (Config.Item("comboR", true).GetValue<bool>())
             {
                 var t = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);

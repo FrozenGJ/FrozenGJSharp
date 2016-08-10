@@ -11,7 +11,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
     class Twitch
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         public Spell Q, W, E, R;
         public float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
@@ -115,7 +115,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             var t = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
             if (t.IsValidTarget())
             {
-                if (!LeagueSharp.Common.Orbwalking.InAutoAttackRange(t) && Config.Item("Rks", true).GetValue<bool>() && Player.GetAutoAttackDamage(t) * 4 > t.Health)
+                if (!SebbyLib.Orbwalking.InAutoAttackRange(t) && Config.Item("Rks", true).GetValue<bool>() && Player.GetAutoAttackDamage(t) * 4 > t.Health)
                     R.Cast();
 
                 if (t.CountEnemiesInRange(450) >= Config.Item("countR", true).GetValue<Slider>().Value && 0 != Config.Item("countR", true).GetValue<Slider>().Value)
@@ -129,7 +129,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
             if (t.IsValidTarget())
             {
 
-                if (Program.Combo && Player.Mana > WMANA + RMANA + EMANA && (Player.GetAutoAttackDamage(t) * 2 < t.Health || !LeagueSharp.Common.Orbwalking.InAutoAttackRange(t)))
+                if (Program.Combo && Player.Mana > WMANA + RMANA + EMANA && (Player.GetAutoAttackDamage(t) * 2 < t.Health || !SebbyLib.Orbwalking.InAutoAttackRange(t)))
                     Program.CastSpell(W, t);
                 else if ((Program.Combo || Program.Farm) && Player.Mana > RMANA + WMANA + EMANA)
                 {
@@ -163,11 +163,10 @@ namespace OneKeyToWin_AIO_Sebby.Champions
 
         private void LogicE()
         {
-            foreach (var enemy in HeroManager.Enemies.Where(enemy => enemy.IsValidTarget(E.Range) && enemy.HasBuff("TwitchDeadlyVenom")))
+            foreach (var enemy in HeroManager.Enemies.Where(enemy => enemy.IsValidTarget(E.Range) && enemy.HasBuff("TwitchDeadlyVenom") && OktwCommon.ValidUlt(enemy)))
             {
                 if (Config.Item("Eks", true).GetValue<bool>() && E.GetDamage(enemy) > enemy.Health)
                 {
-                    Program.debug("DUPAAA1");
                     E.Cast();
                 }
                 if (Player.Mana > RMANA + EMANA)
@@ -175,14 +174,12 @@ namespace OneKeyToWin_AIO_Sebby.Champions
                     int buffsNum = OktwCommon.GetBuffCount(enemy, "TwitchDeadlyVenom");
                     if (Config.Item("5e", true).GetValue<bool>() && buffsNum == 6)
                     {
-                        Program.debug("DUPAAA2");
                         E.Cast();
                     }
                     float buffTime = OktwCommon.GetPassiveTime(enemy, "TwitchDeadlyVenom");
                 
-                    if (!LeagueSharp.Common.Orbwalking.InAutoAttackRange(enemy) && (Player.ServerPosition.Distance(enemy.ServerPosition) > 950 || buffTime < 1) && 0 < Config.Item("countE", true).GetValue<Slider>().Value && buffsNum >= Config.Item("countE", true).GetValue<Slider>().Value)
+                    if (!SebbyLib.Orbwalking.InAutoAttackRange(enemy) && (Player.ServerPosition.Distance(enemy.ServerPosition) > 950 || buffTime < 1) && 0 < Config.Item("countE", true).GetValue<Slider>().Value && buffsNum >= Config.Item("countE", true).GetValue<Slider>().Value)
                     {
-                        Program.debug("DUPAAA3 " + buffTime);
                         E.Cast();
                     }
                 }

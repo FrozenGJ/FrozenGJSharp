@@ -142,14 +142,24 @@ namespace Activator.Summoners
                 {
                     Activator.UseEnemyMenu = true;
                     Menu.AddItem(new MenuItem("usesmite", "Use Smite")).SetValue(new KeyBind('M', KeyBindType.Toggle, true)).Permashow();
-                    Menu.AddItem(new MenuItem("smiteskill", "Smite + Ability")).SetValue(true);
+                    Menu.AddItem(new MenuItem("smiteskill", "-> Smite + Ability")).SetValue(true);
                     Menu.AddItem(new MenuItem("smitesmall", "Smite Small Camps")).SetValue(true);
+                    // Menu.AddItem(new MenuItem("smitekrug", "-> Krug")).SetValue(true);
+                    // Menu.AddItem(new MenuItem("smitewolve", "-> Wolves")).SetValue(true);
+                    // Menu.AddItem(new MenuItem("smiterazor", "-> Razorbeak")).SetValue(true);
                     Menu.AddItem(new MenuItem("smitelarge", "Smite Large Camps")).SetValue(true);
+                    // Menu.AddItem(new MenuItem("smiteblu", "-> Blu")).SetValue(true);
+                    // Menu.AddItem(new MenuItem("smitered", "-> Red")).SetValue(true);
                     Menu.AddItem(new MenuItem("smitesuper", "Smite Epic Camps")).SetValue(true);
+                    // Menu.AddItem(new MenuItem("smitebaron", "-> Baron")).SetValue(true);
+                    // Menu.AddItem(new MenuItem("smitedragon", "-> Dragon")).SetValue(true);
+                    // Menu.AddItem(new MenuItem("smiterift", "-> Rift Herald")).SetValue(true);
                     Menu.AddItem(new MenuItem("smitemode", "Smite Enemies: "))
                         .SetValue(new StringList(new[] { "Killsteal", "Combo", "Nope" }, 1));
-                    Menu.AddItem(new MenuItem("savesmite", "Save a Smite Charge")
+                    Menu.AddItem(new MenuItem("savesmite", "-> Save a Smite Charge")
                         .SetValue(true).SetTooltip("Will only combo smite if Ammo > 1"));
+                    // Menu.AddItem(new MenuItem("savesmite2", "-> Dont Smite Near Camps")
+                        // .SetValue(true).SetTooltip("Wont smite enemies near camps"));
                 }
 
                 if (Name == "summonerteleport")

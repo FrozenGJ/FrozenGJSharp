@@ -1,6 +1,5 @@
 ﻿using System;
 using Activator.Base;
-using Activator.Handlers;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -31,7 +30,7 @@ namespace Activator.Items.Cleansers
                     if (!Parent.Item(Parent.Name + "useon" + hero.Player.NetworkId).GetValue<bool>())
                         continue;
 
-                    Buffs.CheckMercurial(hero.Player);
+                    Helpers.CheckMercurial(hero.Player);
 
                     if (hero.MercurialBuffCount >= Menu.Item("use" + Name + "number").GetValue<Slider>().Value &&
                         hero.MercurialHighestBuffTime >= Menu.Item("use" + Name + "time").GetValue<Slider>().Value)

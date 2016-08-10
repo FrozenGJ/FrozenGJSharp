@@ -2,6 +2,7 @@
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using Activator.Data;
     
 namespace Activator.Summoners
 {
@@ -110,7 +111,7 @@ namespace Activator.Summoners
 
                     // combo damge
                     totaldmg +=
-                        Data.Somedata.DamageLib.Sum(
+                        Gamedata.DamageLib.Sum(
                             entry =>
                                 Player.GetSpell(entry.Value).IsReady(2)
                                     ? entry.Key(Player, tar.Player, Player.GetSpell(entry.Value).Level - 1)

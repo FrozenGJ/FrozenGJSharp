@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using SharpDX;
 using SharpDX.Direct3D9;
 using Color = System.Drawing.Color;
@@ -36,11 +39,11 @@ namespace LeagueSharp.Common {
 			Info.AddItem(new MenuItem("logo类型", "选择显示的logo的类型").SetValue(new StringList(new[] { "logo1", "logo2" })));
 			Info.AddItem(new MenuItem("新闻", "显示FrozenGJ新闻").SetValue(true));
 			Info.AddItem(new MenuItem("加群", "点击复制FrozenGJ脚本群号").SetValue(false).DontSave()).ValueChanged += (sender, args) =>
-			 {
-				 //System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EAsP8x");
-				 System.Windows.Forms.Clipboard.SetText("FrozenGJ脚本群:10642347");
-				 Game.PrintChat("[FrozenGJ]：".ToHtml(Color.RoyalBlue) + "群号已经复制，记得出游戏后添加。FrozenGJ脚本群:10642347".ToUTF8());
-			 };
+			{
+				//System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EAsP8x");
+				//System.Windows.Forms.Clipboard.SetText("FrozenGJ脚本群:10642347");
+				//Game.PrintChat("[FrozenGJ]：".ToHtml(Color.RoyalBlue) + "群号已经复制，记得出游戏后添加。FrozenGJ脚本群:10642347".ToUTF8());
+			};
 			Info.AddItem(new MenuItem("Info0", ""));
 			Info.AddItem(new MenuItem("Info1", "版权归属L#，部分代码归代码作者"));
 
@@ -52,10 +55,10 @@ namespace LeagueSharp.Common {
 			if (Info.Item("水印").GetValue<bool>() && DrawWaterMark)
 			{
 				MenuDrawHelper.DrawBox(
-				new Vector2(0, Drawing.Height * 48f / 100), 
+				new Vector2(0, Drawing.Height * 48f / 100),
 				Drawing.Width,
 				Drawing.Height * 5 / 100,
-				Color.Black, 
+				Color.Black,
 				1,
 				Color.Goldenrod);
 
@@ -108,7 +111,7 @@ namespace LeagueSharp.Common {
 			PingBlocker.AddItem(new MenuItem("pb2", "还是手动打的，会统一处理").SetFontStyle(FontStyle.Regular, SharpDX.Color.Gold));
 
 			Language = new Menu("语言设置", "语言设置");
-			Language.AddItem(new MenuItem("语言", "强制菜单使用以下语言").SetValue(new StringList(new []{"默认","中文","英文"}, 1)));
+			Language.AddItem(new MenuItem("语言", "强制菜单使用以下语言").SetValue(new StringList(new[] { "默认", "中文", "英文" }, 1)));
 			Language.AddItem(new MenuItem("33", "更换语言后需要F5重载脚本生效"));
 
 			Game.OnPing += Game_OnPing;
@@ -118,7 +121,7 @@ namespace LeagueSharp.Common {
 		}
 
 		private static void Game_OnUpdate(EventArgs args) {
-			LeagueSharp.Hacks.DisableDrawings = DisableDrawings 
+			LeagueSharp.Hacks.DisableDrawings = DisableDrawings
 				|| Game.Time < EndTime
 				|| Draw.Item("商店屏蔽").GetValue<bool>() && MenuGUI.IsShopOpen
 				|| Draw.Item("比分屏蔽").GetValue<bool>() && MenuGUI.IsScoreboardOpen;
@@ -153,7 +156,7 @@ namespace LeagueSharp.Common {
 					|| args.EventId == GameEventId.OnChampionPentaKill
 					|| args.EventId == GameEventId.OnChampionUnrealKill)
 				{
-					EndTime =  Math.Max(Game.Time + Draw.Item("屏蔽时长").GetValue<Slider>().Value, EndTime);
+					EndTime = Math.Max(Game.Time + Draw.Item("屏蔽时长").GetValue<Slider>().Value, EndTime);
 				}
 
 			}

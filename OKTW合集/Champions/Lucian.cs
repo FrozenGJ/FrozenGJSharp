@@ -10,7 +10,7 @@ namespace OneKeyToWin_AIO_Sebby
     class Lucian
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
 
         private Spell E, Q, Q1, R, R1, W, W1;
 
@@ -63,7 +63,7 @@ namespace OneKeyToWin_AIO_Sebby
             
             Game.OnUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-            LeagueSharp.Common.Orbwalking.AfterAttack += afterAttack;
+            SebbyLib.Orbwalking.AfterAttack += afterAttack;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
             Spellbook.OnCastSpell +=Spellbook_OnCastSpell;
         }
@@ -190,7 +190,7 @@ namespace OneKeyToWin_AIO_Sebby
             var t = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Physical);
             if (t.IsValidTarget())
             {
-                if (Config.Item("ignoreCol", true).GetValue<bool>() && LeagueSharp.Common.Orbwalking.InAutoAttackRange(t))
+                if (Config.Item("ignoreCol", true).GetValue<bool>() && SebbyLib.Orbwalking.InAutoAttackRange(t))
                     W.Collision=false;
                 else
                     W.Collision=true;
@@ -198,7 +198,7 @@ namespace OneKeyToWin_AIO_Sebby
                 var qDmg = Q.GetDamage(t);
                 var wDmg = OktwCommon.GetKsDamage(t, W);
 
-                if (LeagueSharp.Common.Orbwalking.InAutoAttackRange(t))
+                if (SebbyLib.Orbwalking.InAutoAttackRange(t))
                 {
                     qDmg += (float)AaDamage(t);
                     wDmg += (float)AaDamage(t);
@@ -223,7 +223,7 @@ namespace OneKeyToWin_AIO_Sebby
                 }
 
                 
-                if (Orbwalker.ActiveMode == LeagueSharp.Common.Orbwalking.OrbwalkingMode.Combo && Player.Mana > RMANA + WMANA + EMANA + QMANA)
+                if (Orbwalker.ActiveMode == SebbyLib.Orbwalking.OrbwalkingMode.Combo && Player.Mana > RMANA + WMANA + EMANA + QMANA)
                     Program.CastSpell(W, t);
                 else if (Program.Farm && Config.Item("harras" + t.ChampionName).GetValue<bool>() && !Player.UnderTurret(true) && Player.Mana > Player.MaxMana * 0.8 && Player.Mana > RMANA + WMANA + EMANA + QMANA + WMANA)
                     Program.CastSpell(W, t);
@@ -239,7 +239,7 @@ namespace OneKeyToWin_AIO_Sebby
         {
             var t = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
 
-            if (t.IsValidTarget(R.Range) && t.CountAlliesInRange(500) == 0 && OktwCommon.ValidUlt(t) && !LeagueSharp.Common.Orbwalking.InAutoAttackRange(t))
+            if (t.IsValidTarget(R.Range) && t.CountAlliesInRange(500) == 0 && OktwCommon.ValidUlt(t) && !SebbyLib.Orbwalking.InAutoAttackRange(t))
             {
                 var rDmg = R.GetDamage(t,1) * (10 + 5 * R.Level);
 

@@ -86,7 +86,7 @@ namespace SFXUtility.Features.Drawings
 
                 Menu.AddSubMenu(drawingMenu);
 
-                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(true));
 
                 Parent.Menu.AddSubMenu(Menu);
             }

@@ -12,7 +12,7 @@ namespace OneKeyToWin_AIO_Sebby.Core
     class OktwTs
     {
         private Menu Config = Program.Config;
-        private static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        private static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Obj_AI_Hero Player { get { return ObjectManager.Player; } }
 
         private Obj_AI_Hero FocusTarget, DrawInfo = null;
@@ -35,8 +35,8 @@ namespace OneKeyToWin_AIO_Sebby.Core
                 Config.SubMenu("Target Selector OKTW©").AddItem(new MenuItem("TsAaPriority" + enemy.ChampionName, enemy.ChampionName).SetValue(new Slider(i, 0, 5))).DontSave();
                 i--;
             }
-            LeagueSharp.Common.Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
-            LeagueSharp.Common.Orbwalking.AfterAttack += Orbwalking_AfterAttack;
+            SebbyLib.Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
+            SebbyLib.Orbwalking.AfterAttack += Orbwalking_AfterAttack;
             Game.OnUpdate += OnUpdate;
             Game.OnWndProc += Game_OnWndProc;
             Drawing.OnDraw += OnDraw;
@@ -103,7 +103,7 @@ namespace OneKeyToWin_AIO_Sebby.Core
             }
         }
 
-        private void Orbwalking_BeforeAttack(LeagueSharp.Common.Orbwalking.BeforeAttackEventArgs args)
+        private void Orbwalking_BeforeAttack(SebbyLib.Orbwalking.BeforeAttackEventArgs args)
         {
             if (Config.Item("TsAa").GetValue<StringList>().SelectedIndex != 0 || !Config.Item("extraFocus").GetValue<bool>() || !Program.Combo)
             {
@@ -144,7 +144,7 @@ namespace OneKeyToWin_AIO_Sebby.Core
 
         private void OnUpdate(EventArgs args)
         {
-            if (Config.Item("TsAa").GetValue<StringList>().SelectedIndex == 2 || !LeagueSharp.Common.Orbwalking.CanAttack() || !Program.Combo)
+            if (Config.Item("TsAa").GetValue<StringList>().SelectedIndex == 2 || !SebbyLib.Orbwalking.CanAttack() || !Program.Combo)
             {
                 return;
             }

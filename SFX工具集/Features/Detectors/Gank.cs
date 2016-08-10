@@ -224,7 +224,7 @@ namespace SFXUtility.Features.Detectors
                 Menu.AddItem(new MenuItem(Name + "Duration", "Duration").SetValue(new Slider(10, 0, 30)));
                 Menu.AddItem(new MenuItem(Name + "Ping", "Ping (Local)").SetValue(true));
 
-                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(true));
 
                 Parent.Menu.AddSubMenu(Menu);
 

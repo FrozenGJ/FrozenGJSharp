@@ -18,10 +18,6 @@ namespace Activator.Items.Offensives
         internal override int DefaultHP => 95;
         internal override int DefaultMP => 35;
 
-        public _3043()
-        {
-            // Obj_AI_Base.OnProcessSpellCast += OnCast;
-        }
 
         private bool muramana;
         public override void OnTick(EventArgs args)

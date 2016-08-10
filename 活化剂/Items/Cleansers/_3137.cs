@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Linq;
 using Activator.Base;
-using Activator.Handlers;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -18,7 +18,6 @@ namespace Activator.Items.Cleansers
         internal override MapType[] Maps => new[] { MapType.CrystalScar, MapType.TwistedTreeline };
         internal override int DefaultHP => 5;
         internal override int DefaultMP => 0;
-
         public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>() || !IsReady())
@@ -31,7 +30,7 @@ namespace Activator.Items.Cleansers
                     if (!Parent.Item(Parent.Name + "useon" + hero.Player.NetworkId).GetValue<bool>())
                         continue;
 
-                    Buffs.CheckDervish(hero.Player);
+                    Helpers.CheckDervish(hero.Player);
 
                     if (hero.DervishBuffCount >= Menu.Item("use" + Name + "number").GetValue<Slider>().Value &&
                         hero.DervishHighestBuffTime >= Menu.Item("use" + Name + "time").GetValue<Slider>().Value)

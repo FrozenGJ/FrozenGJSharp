@@ -88,7 +88,7 @@ namespace SFXUtility.Features.Activators
                         new Slider(250, 0, (int) _heroJumps.Min(h => h.Range))));
                 Menu.AddItem(new MenuItem(Name + "Hotkey", "Hotkey").SetValue(new KeyBind('T', KeyBindType.Press)));
 
-                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(true));
 
                 Parent.Menu.AddSubMenu(Menu);
             }

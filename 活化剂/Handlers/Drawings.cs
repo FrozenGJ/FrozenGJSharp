@@ -108,9 +108,9 @@ namespace Activator.Handlers
                     var smitespell = Data.Smitedata.SpellList
                         .FirstOrDefault(s => s.Name == Activator.Player.ChampionName);
 
-                    foreach (var minion in 
+                    foreach (var minion in
                         MinionManager.GetMinions(Activator.Player.Position, 1200f, MinionTypes.All, MinionTeam.Neutral)
-                            .Where(th => Essentials.IsEpicMinion(th) || Essentials.IsLargeMinion(th)))
+                            .Where(th => Helpers.IsEpicMinion(th) || Helpers.IsLargeMinion(th)))
                     {
                         var yoffset = Offsets[minion.Name].Y;
                         var xoffset = Offsets[minion.Name].X;
@@ -145,11 +145,11 @@ namespace Activator.Handlers
                         for (var i = 0; i < ana; i++)
                         {
                             if (Activator.Origin.Item("usesmite").GetValue<KeyBind>().Active)
-                                Drawing.DrawLine((float) pos + i, yaxis, (float)pos + i, yaxis + height, 1,
+                                Drawing.DrawLine((float) pos + i, yaxis, (float) pos + i, yaxis + height, 1,
                                     Color.White);
 
                             if (!Activator.Origin.Item("usesmite").GetValue<KeyBind>().Active)
-                                Drawing.DrawLine((float) pos + i, yaxis, (float)pos + i, yaxis + height, 1,
+                                Drawing.DrawLine((float) pos + i, yaxis, (float) pos + i, yaxis + height, 1,
                                     Color.Gray);
                         }
                     }

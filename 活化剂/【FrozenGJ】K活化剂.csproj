@@ -37,19 +37,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="LeagueSharp">
-      <HintPath>C:\Program Files (x86)\PlaySharp\References\LeagueSharp.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Fz0yfdA1G\References\LeagueSharp.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Common">
-      <HintPath>C:\Program Files (x86)\PlaySharp\References\LeagueSharp.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="LeagueSharp.Data">
-      <HintPath>C:\Program Files (x86)\PlaySharp\References\LeagueSharp.Data.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Fz0yfdA1G\References\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>C:\Program Files (x86)\PlaySharp\References\SharpDX.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Fz0yfdA1G\References\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>C:\Program Files (x86)\PlaySharp\References\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Fz0yfdA1G\References\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -61,13 +58,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Base\Essentials.cs" />
+    <Compile Include="Base\Helpers.cs" />
     <Compile Include="Base\Champion.cs" />
-    <Compile Include="Data\Smitedata.cs" />
-    <Compile Include="Base\Gametroy.cs">
+    <Compile Include="Data\Troydata.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Data\Gametroydata.cs">
+    <Compile Include="Data\Smitedata.cs" />
+    <Compile Include="Base\Gametroy.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Handlers\Drawings.cs" />
@@ -87,8 +84,7 @@
     <Compile Include="Items\Offensives\_3050.cs" />
     <Compile Include="Items\Offensives\_3748.cs" />
     <Compile Include="Items\Offensives\_3092.cs" />
-    <Compile Include="Handlers\Stealth.cs" />
-    <Compile Include="Base\Enumerations.cs" />
+    <Compile Include="Base\Lists.cs" />
     <Compile Include="Items\Cleansers\_3137.cs" />
     <Compile Include="Items\Cleansers\_3139.cs" />
     <Compile Include="Items\Cleansers\_3140.cs" />
@@ -120,8 +116,8 @@
     <Compile Include="Items\Offensives\_3800.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Data\Somedata.cs" />
-    <Compile Include="Data\Buffdata.cs" />
+    <Compile Include="Data\Gamedata.cs" />
+    <Compile Include="Data\Auradata.cs" />
     <Compile Include="Handlers\Buffs.cs" />
     <Compile Include="Spells\Evaders\alphastrike.cs" />
     <Compile Include="Spells\Evaders\blackshield.cs" />

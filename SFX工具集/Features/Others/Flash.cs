@@ -64,11 +64,11 @@ namespace SFXUtility.Features.Others
             {
                 Menu = new Menu(Name, Name);
 
-                Menu.AddItem(new MenuItem(Name + "WallCheck", "Wall Check").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "WallCheck", "Wall Check").SetValue(true));
                 Menu.AddItem(new MenuItem(Name + "IgniteCheck", "Ignite Check").SetValue(false));
                 Menu.AddItem(new MenuItem(Name + "Extend", "Extend").SetValue(false));
 
-                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(true));
 
                 Parent.Menu.AddSubMenu(Menu);
             }

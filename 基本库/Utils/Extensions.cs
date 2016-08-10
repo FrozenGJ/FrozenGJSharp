@@ -9,7 +9,12 @@ namespace LeagueSharp.Common {
 	public static class Extensions {
 		#region 文字转换类方法
 
-		public static void FgInfo(string assemblyName, string info = "已加载。。。　", int delay = 0) {
+		public static void FgInfo(string assemblyName, string info = "已加载。。。　", int delay = 0)
+		{
+			Info( assemblyName,  info, delay);
+		}
+
+		public static void Info(string assemblyName, string info = "已加载。。。　", int delay = 0) {
 			var start = "FrozenGJ".ToHtml(Color.RoyalBlue, FontStlye.Bold);
 			var end = info.Equals("已加载。。。　")
 				? (assemblyName + "已加载。。。　").ToHtml(Color.Goldenrod, FontStlye.Cite)

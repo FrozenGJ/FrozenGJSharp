@@ -262,12 +262,12 @@ namespace SFXUtility.Features.Trackers
 
                 Menu.AddSubMenu(drawingMenu);
 
-                Menu.AddItem(new MenuItem(Name + "SSTimer", "SS Timer").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "SSTimer", "SS Timer").SetValue(true));
                 Menu.AddItem(new MenuItem(Name + "SSCircle", "SS Circle").SetValue(false));
                 Menu.AddItem(new MenuItem(Menu.Name + "Minimap", "Minimap").SetValue(true));
                 Menu.AddItem(new MenuItem(Menu.Name + "Map", "Map").SetValue(true));
 
-                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(true));
 
                 Parent.Menu.AddSubMenu(Menu);
 

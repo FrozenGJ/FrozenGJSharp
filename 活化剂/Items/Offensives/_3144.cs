@@ -1,5 +1,6 @@
 ﻿using System;
 using Activator.Base;
+using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Activator.Items.Offensives
@@ -12,7 +13,7 @@ namespace Activator.Items.Offensives
         internal override string DisplayName => "Bilgewater's Cutlass";
         internal override int Duration => 100;
         internal override float Range => 550f;
-        internal override MenuType[] Category => new[] { MenuType.SelfLowHP, MenuType.EnemyLowHP };
+        internal override MenuType[] Category => new[] { MenuType.SelfLowHP, MenuType.EnemyLowHP, MenuType.Gapcloser };
         internal override MapType[] Maps => new[] { MapType.Common };
         internal override int DefaultHP => 95;
         internal override int DefaultMP => 0;
@@ -35,6 +36,43 @@ namespace Activator.Items.Offensives
                 if ((Player.Health / Player.MaxHealth * 100) <= Menu.Item("selflowhp" + Name + "pct").GetValue<Slider>().Value)
                 {
                     UseItem(Tar.Player, true);
+                }
+            }
+        }
+
+        public override void OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        {
+            Obj_AI_Hero attacker = gapcloser.Sender;
+
+            if (!Menu.Item("use" + Name).GetValue<bool>() ||
+                !Menu.Item("enemygap" + Name).GetValue<bool>() || !IsReady())
+                return;
+
+            foreach (var hero in Activator.Allies())
+            {
+                if (!hero.Player.IsMe)
+                    continue;
+
+                if (!Parent.Item(Parent.Name + "useon" + attacker.NetworkId).GetValue<bool>())
+                    continue;
+
+                if (Menu.Item("enemygapmelee" + Name).GetValue<bool>() && !attacker.IsMelee())
+                    continue;
+
+                if (hero.HitTypes.Contains(HitType.Ultimate) || hero.HitTypes.Contains(HitType.Danger))
+                {
+                    if (attacker.Distance(hero.Player) <= Range / 2f)
+                    {
+                        UseItem(Tar.Player, true);
+                    }
+                }
+
+                if (!Menu.Item("enemygapdanger" + Name).GetValue<bool>())
+                {
+                    if (attacker.Distance(hero.Player) <= Range / 2f)
+                    {
+                        UseItem(Tar.Player, true);
+                    }
                 }
             }
         }

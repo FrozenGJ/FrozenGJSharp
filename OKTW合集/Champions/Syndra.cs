@@ -11,7 +11,7 @@ namespace OneKeyToWin_AIO_Sebby.Champions
     class Syndra
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         public Obj_AI_Hero Player { get { return ObjectManager.Player; } }
         private Spell E, Q, R, W, EQ, Eany;
         private float QMANA = 0, WMANA = 0, EMANA = 0, RMANA = 0;

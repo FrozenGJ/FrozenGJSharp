@@ -97,13 +97,13 @@ namespace SFXUtility.Features.Activators
                     new MenuItem(smiteDrawingMenu.Name + "Thickness", "Thickness").SetValue(new Slider(2, 1, 10)));
                 smiteDrawingMenu.AddItem(new MenuItem(smiteDrawingMenu.Name + "Range", "Range").SetValue(false));
 
-                smiteMenu.AddItem(new MenuItem(smiteMenu.Name + "Use", "Use").SetValue(false));
+                smiteMenu.AddItem(new MenuItem(smiteMenu.Name + "Use", "Use").SetValue(true));
 
                 Menu.AddItem(new MenuItem(Name + "SmallCamps", "Small Camps").SetValue(false));
 
                 Menu.AddItem(new MenuItem(Name + "Hotkey", "Hotkey").SetValue(new KeyBind('N', KeyBindType.Toggle)));
 
-                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(false));
+                Menu.AddItem(new MenuItem(Name + "Enabled", "Enabled").SetValue(true));
 
                 Menu.Item(Name + "SmallCamps").ValueChanged +=
                     delegate(object o, OnValueChangeEventArgs args)

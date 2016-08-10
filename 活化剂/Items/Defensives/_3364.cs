@@ -17,11 +17,6 @@ namespace Activator.Items.Defensives
         internal override MenuType[] Category => new[] { MenuType.Stealth, MenuType.ActiveCheck };
         internal override MapType[] Maps => new[] { MapType.SummonersRift };
 
-        public _3364()
-        {
-            Stealth.Init();
-        }
-
         public override void OnTick(EventArgs args)
         {
             if (!Menu.Item("use" + Name).GetValue<bool>() || !IsReady())

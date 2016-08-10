@@ -1,5 +1,6 @@
 ﻿using System;
 using Activator.Base;
+using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace Activator.Items.Offensives
@@ -29,12 +30,15 @@ namespace Activator.Items.Offensives
 
                 if ((Tar.Player.Health / Tar.Player.MaxHealth * 100) <= Menu.Item("enemylowhp" + Name + "pct").GetValue<Slider>().Value)
                 {
-                    if (Tar.Player.Distance(Player.ServerPosition) > Range - 100 && !Tar.Player.IsFacing(Player) && !Tar.Player.IsMelee)
+                    if (Tar.Player.Distance(Player.ServerPosition) > Range - 100)
                     {
-                        var endpos = Player.ServerPosition.To2D() + Player.Direction.To2D().Perpendicular() * Range;
-                        if (endpos.To3D().CountEnemiesInRange(Range + (1 + Player.AttackRange + Player.Distance(Player.BBox.Minimum))) > 0)
+                        if (!Tar.Player.IsFacing(Player) && Player.IsFacing(Tar.Player))
                         {
-                            UseItem(true);
+                            var endpos = Player.ServerPosition.To2D() + Player.Direction.To2D().Perpendicular() * Range;
+                            if (endpos.To3D().CountEnemiesInRange(Range + (1 + Player.AttackRange + Player.Distance(Player.BBox.Minimum))) > 0)
+                            {
+                                UseItem(Tar.Player.ServerPosition, true);
+                            }
                         }
                     }
                 }
@@ -46,7 +50,7 @@ namespace Activator.Items.Offensives
                         var endpos = Player.ServerPosition.To2D() + Player.Direction.To2D().Perpendicular() * Range;
                         if (endpos.To3D().CountEnemiesInRange(Range + (1 + Player.AttackRange + Player.Distance(Player.BBox.Minimum))) <= 1)
                         {
-                            UseItem(true);
+                            UseItem(Game.CursorPos, true);
                         }
                     }
                 }

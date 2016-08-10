@@ -10,7 +10,7 @@ namespace OneKeyToWin_AIO_Sebby
     class Activator
     {
         private Menu Config = Program.Config;
-        public static LeagueSharp.Common.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        public static SebbyLib.Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
         private Obj_AI_Hero Player { get { return ObjectManager.Player; } }
 
 
@@ -175,7 +175,7 @@ namespace OneKeyToWin_AIO_Sebby
             Config.SubMenu("Activator OKTW©").SubMenu("Cleansers").SubMenu("Buff type").AddItem(new MenuItem("Taunt", "Taunt").SetValue(true));
             Config.SubMenu("Activator OKTW©").SubMenu("Cleansers").SubMenu("Buff type").AddItem(new MenuItem("Blind", "Blind").SetValue(true));
             Game.OnUpdate += Game_OnGameUpdate;
-            LeagueSharp.Common.Orbwalking.AfterAttack += Orbwalking_AfterAttack;
+            SebbyLib.Orbwalking.AfterAttack += Orbwalking_AfterAttack;
             Spellbook.OnCastSpell += Spellbook_OnCastSpell;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
             //Drawing.OnDraw += Drawing_OnDraw;
@@ -186,7 +186,7 @@ namespace OneKeyToWin_AIO_Sebby
             if (Config.Item("HydraTitanic").GetValue<bool>() && Program.Combo && HydraTitanic.IsReady() && target.IsValid<Obj_AI_Hero>())
             {
                 HydraTitanic.Cast();
-                LeagueSharp.Common.Orbwalking.ResetAutoAttackTimer();
+                SebbyLib.Orbwalking.ResetAutoAttackTimer();
             }
         }
 
@@ -477,22 +477,22 @@ namespace OneKeyToWin_AIO_Sebby
         {
             if (CanUse(ignite) && Config.Item("Ignite").GetValue<bool>())
             {
-                var enemy = TargetSelector.GetTarget(600, TargetSelector.DamageType.True);
-                if (enemy.IsValidTarget() && OktwCommon.ValidUlt(enemy))
+                foreach (var enemy in HeroManager.Enemies.Where(enemy => enemy.IsValidTarget(600)))
                 {
+
                     var pred = enemy.Health - OktwCommon.GetIncomingDamage(enemy);
 
-                    var IgnDmg = Player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite) ;
+                    var IgnDmg = Player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
 
-                    if (pred <= IgnDmg && enemy.CountAlliesInRange(500) < 2)
+                    if (pred <= 2 * IgnDmg && OktwCommon.ValidUlt(enemy))
                     {
-                        var enemyPred = Prediction.GetPrediction(enemy, 0.1f).CastPosition;
-                        if (Player.ServerPosition.Distance(enemyPred) > 500 || NavMesh.IsWallOfGrass(enemyPred, 0))
-                            Player.Spellbook.CastSpell(ignite, enemy);
-                    }
+                        if (pred <= IgnDmg && enemy.CountAlliesInRange(450) < 2)
+                        {
+                            var enemyPred = Prediction.GetPrediction(enemy, 0.1f).CastPosition;
+                            if (Player.ServerPosition.Distance(enemyPred) > 500 || NavMesh.IsWallOfGrass(enemyPred, 0))
+                                Player.Spellbook.CastSpell(ignite, enemy);
+                        }
 
-                    if (pred <= 2 * IgnDmg)
-                    {
                         if (enemy.PercentLifeStealMod > 10)
                             Player.Spellbook.CastSpell(ignite, enemy);
 
